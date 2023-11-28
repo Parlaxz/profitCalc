@@ -1,0 +1,38 @@
+// ./prisma/schema.prisma
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ./prisma/schema.prisma
+model Order {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber      String   @unique
+  date             DateTime
+  printifyQuantity Int
+  shopifyQuantity  Int
+  totalCost        Float
+  totalRevenue     Float
+  shopifyCut       Float
+  totalProfit      Float
+}
+
+model PrintifyOrder {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber   Int      @unique
+  printifyId    String
+  customerName  String
+  customerEmail String
+  date          DateTime
+  numLineItems  Int
+  totalShipping Float
+  totalTax      Float
+  totalCost     Float
+}
