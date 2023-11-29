@@ -30,7 +30,6 @@ export async function addPrintifyOrders(printifyOrders) {
         orderNumber: order.orderNumber,
       },
     });
-    console.log("existingOrder", existingOrder);
     if (existingOrder) {
       // Order already exists, update it
       const updatedOrder = await prisma.printifyOrder.update({

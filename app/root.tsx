@@ -20,6 +20,12 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          href="https://fonts.googleapis.com/css?family=Lato:400,700"
+          rel="stylesheet"
+          type="text/css"
+        />
+
         <Meta />
         <Links />
       </head>

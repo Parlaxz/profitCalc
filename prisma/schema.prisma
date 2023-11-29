@@ -11,19 +11,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ./prisma/schema.prisma
-model Order {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderNumber      String   @unique
-  date             DateTime
-  printifyQuantity Int
-  shopifyQuantity  Int
-  totalCost        Float
-  totalRevenue     Float
-  shopifyCut       Float
-  totalProfit      Float
-}
-
 model PrintifyOrder {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   orderNumber   Int      @unique
@@ -35,4 +22,14 @@ model PrintifyOrder {
   totalShipping Float
   totalTax      Float
   totalCost     Float
+}
+
+model ShopifyOrder {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  orderNumber Int
+  revenue     Float
+  customer    String
+  createdAt   String
+  lineItems   Json[]
 }
