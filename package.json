@@ -10,7 +10,8 @@
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
     "start": "remix-serve ./build/index.js",
     "generate": "npm -s run generate:prisma",
-    "generate:prisma": "prisma generate"
+    "generate:prisma": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     
