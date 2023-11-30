@@ -16,6 +16,7 @@ import {
   ShoppingCartIcon,
   ExclamationTriangleIcon,
   ArrowTrendingUpIcon,
+  ShoppingBagIcon,
 } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
 
@@ -105,6 +106,7 @@ export async function loader() {
       dailyBudget: metaAdsFinal,
       currentSpend: metaAdsCurrent,
     },
+    shopify: { revenue: shopifyRevenue, grossRevenue: shopifyGrossRevenue },
     orders: ordersArray,
   });
 }
@@ -154,7 +156,19 @@ export default function Index() {
                 </div>
                 <div className="text-neutral-400">Facebook Spend</div>
               </Card>
-              <Card></Card>
+              <Card>
+                {" "}
+                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
+                  <ShoppingBagIcon className="h-8 w-8 text-white" />
+                </div>
+                <div className=" font-bold text-4xl">
+                  ${pageData.shopify.grossRevenue.toFixed(2)}{" "}
+                  <span className="text-neutral-300 text-xl">
+                    / {pageData.shopify.revenue.toFixed(2)}
+                  </span>
+                </div>
+                <div className="text-neutral-400">Shopify Revenue</div>
+              </Card>
               <Card></Card>
             </div>
             <Card></Card>
