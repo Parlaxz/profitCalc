@@ -23,17 +23,24 @@ import React, { useState } from "react";
 export async function loader() {
   //config
   const extraCosts = 0;
-  const startDate = "2023-11-29";
-  let endDate = "2023-11-29";
+  const currentDate = new Date().toLocaleDateString("en-CA");
+  console.log(currentDate);
+
+  // const startDate = "2023-11-28";
+  // let endDate = "2023-11-28";
+  let startDate = currentDate,
+    endDate = currentDate;
   endDate = addDaysToDate(endDate, 1);
 
   const shopifyOrders = await getShopifyOrders(startDate, endDate);
   const shopifyRevenue = getShopifyRevenue(shopifyOrders);
   const numItems = getNumItems(shopifyOrders);
+  const numOrders = shopifyOrders.length;
+
   const firstOrderNum = shopifyOrders[0].orderNumber;
   const lastOrderNum = shopifyOrders[shopifyOrders.length - 1].orderNumber;
 
-  const shopifyGrossRevenue = getShopifyGrossRevenue(shopifyRevenue, numItems);
+  const shopifyGrossRevenue = getShopifyGrossRevenue(shopifyRevenue, numOrders);
   let printifyOrders = await getPrintifyOrders(firstOrderNum, lastOrderNum);
   let totalPrice = getPrintifyRevenue(printifyOrders);
   console.log("shopify number orders: " + shopifyOrders.length);
@@ -64,7 +71,6 @@ export async function loader() {
   console.log("metaAdsCurrent", metaAdsCurrent);
   let cashback = (totalPrice + metaAdsFinal) * 0.03;
   const ordersArray = [];
-  const numOrders = shopifyOrders.length;
   for (let i = firstOrderNum; i < firstOrderNum + numOrders; i++) {
     const printifyOrder = printifyOrders.find((order) => {
       return order?.orderNumber === i;
@@ -86,6 +92,8 @@ export async function loader() {
     console.log("order", order);
     ordersArray.push(order);
   }
+  console.log(currentDate);
+
   printStats(
     shopifyGrossRevenue,
     totalPrice,
@@ -124,7 +132,7 @@ export default function Index() {
   const [pageData, setPageData] = useState(loaderData);
   return (
     <div className="max-h-screen h-screen bg-white flex justify-center items-center">
-      <div className="flex flex-col h-screen w-1/6 bg-neutral-100"></div>
+      <div className="md:flex hidden  flex-col h-screen w-1/6 bg-neutral-100"></div>
       <div className="max-h-screen h-screen w-5/6 bg-white">
         <div className="flex items-center justify-between font-bold text-3xl p-8 pb-0">
           <div>Daily Dashboard</div>
@@ -133,12 +141,12 @@ export default function Index() {
           </button>
         </div>
         {/* Main Body */}
-        <div className="grid grid-cols-2 grid-rows-1 gap-8 w-full h-full p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-1 gap-8 w-full h-full md:p-8">
           {" "}
-          <div className="grid grid-rows-2 grid-cols-1 gap-8">
+          <div className="grid  md:grid-rows-2 grid-cols-1 gap-8">
             {" "}
-            <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full h-full ">
-              <Card className="text-white bg-gradient-to-tr from-cyan-500 to-blue-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 w-full h-full ">
+              <Card className="text-white bg-gradient-to-tr from-cyan-500 to-blue-500 h-48">
                 <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-800 to-blue-800">
                   <ArrowTrendingUpIcon className="h-8 w-8 text-white" />
                 </div>

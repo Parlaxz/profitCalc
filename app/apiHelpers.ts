@@ -92,9 +92,9 @@ export function getShopifyRevenue(shopifyOrders: any[]) {
 
 export function getShopifyGrossRevenue(
   shopifyRevenue: number,
-  numItems: number
+  numOrders: number
 ) {
-  return shopifyRevenue * 0.971 - numItems * 0.3;
+  return shopifyRevenue * 0.971 - numOrders * 0.3;
 }
 export function getNumItems(orders: ShopifyOrder[]) {
   let counter = 0;
