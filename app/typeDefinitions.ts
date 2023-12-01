@@ -65,3 +65,18 @@ export interface LineItem {
   quantity: number | null;
   price: number | null;
 }
+
+export interface OrderTableProps {
+  orders: Order[];
+}
+export interface Order {
+  shopifyLineItems?: LineItem[];
+  printifyNumLineItems?: number;
+  orderNumber?: number;
+  orderDate?: string;
+  customerName?: string;
+  revenue?: number;
+  cost?: number;
+  shipping?: number;
+  tax?: number;
+}

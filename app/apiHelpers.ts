@@ -10,6 +10,8 @@ import {
   setShopifyOrder,
   setShopifyOrders,
 } from "prisma/shopifyOrderFunctions";
+import { getPrintifyOrders } from "./routes/api.getPrintifyOrders";
+import { getAdBudget, getFacebookAds } from "./routes/api.getFacebookAds";
 
 export const prisma = new PrismaClient();
 
@@ -57,7 +59,7 @@ function delay(seconds: number): Promise<void> {
 
 //----------------------------------------------------------------
 //revenue Calculators
-export function getPrintifyRevenue(
+export function getPrintifyCost(
   printifyOrders: ({
     orderNumber: number;
     printifyId: any;
@@ -105,7 +107,30 @@ export function getNumItems(orders: ShopifyOrder[]) {
 }
 //----------------------------------------------------------------
 // API ORDER FETCHERS
+
 export async function getShopifyOrders(startDate: string, endDate: string) {
+  // Step 1: Get the latest order from the database (assuming you are using Prisma)
+  const latestOrder = await prisma.shopifyOrder.findFirst({
+    orderBy: { createdAt: "desc" },
+  });
+
+  // Step 2: Get the date of the latest order
+  const dateOfLatestOrder = latestOrder?.createdAt ?? "";
+
+  // Step 3: Call updateShopifyOrders to update orders with today's date
+  await updateShopifyOrders(dateOfLatestOrder, getCurrentDate());
+
+  // Step 4: Get all orders from the database between startDate and endDate
+  const orders = await prisma.shopifyOrder.findMany({
+    where: {
+      AND: [{ createdAt: { gte: startDate } }, { createdAt: { lte: endDate } }],
+    },
+  });
+  // Step 5: Return the orders
+  return orders;
+}
+
+export async function updateShopifyOrders(startDate: string, endDate: string) {
   const ShopifyID = "moshiproject";
   const shopifyAccessToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
   const shopifyUrl = `https://${ShopifyID}.myshopify.com/admin/api/2023-04/graphql.json`;
@@ -114,7 +139,7 @@ export async function getShopifyOrders(startDate: string, endDate: string) {
     "X-Shopify-Access-Token": shopifyAccessToken,
   };
 
-  const ordersPerPage = 50;
+  const ordersPerPage = 47;
   let hasNextPage = true;
   let cursor: string | null = null;
   let allShopifyOrders: ShopifyOrderData[] = [];
@@ -129,7 +154,7 @@ export async function getShopifyOrders(startDate: string, endDate: string) {
                 id
                 name
                 createdAt
-                lineItems(first: 7) {
+                lineItems(first: 8) {
                   edges {
                     node {
                       title
@@ -210,5 +235,162 @@ export async function getShopifyOrders(startDate: string, endDate: string) {
 
   const setMultipleResult = await setShopifyOrders(allShopifyOrders);
   console.log("Set Multiple Result:", setMultipleResult);
+
+  if (allShopifyOrders.length > 0) {
+    return prisma.shopifyOrder.createMany({
+      data: allShopifyOrders,
+    });
+  } else {
+    console.log("All provided orderNumbers already exist in the database.");
+    return null; // or handle it as per your requirement
+  }
+
   return allShopifyOrders;
+}
+
+export async function getDateRangeData(endDate: string, startDate: string) {
+  const extraCosts = 0;
+  let datePreset = getDatePreset(startDate, endDate);
+
+  endDate = addDaysToDate(endDate, 1);
+  console.log("startDate:", startDate, "endDate:", endDate);
+
+  //Get Shopify Data
+  const shopifyOrders = await getShopifyOrders(startDate, endDate);
+  const shopifyRevenue = getShopifyRevenue(shopifyOrders);
+
+  //Process Shopify Data
+  const numOrders = shopifyOrders.length;
+  const firstOrderNum = shopifyOrders[0]?.orderNumber;
+  const lastOrderNum = shopifyOrders[shopifyOrders.length - 1]?.orderNumber;
+  const shopifyGrossRevenue = getShopifyGrossRevenue(shopifyRevenue, numOrders);
+
+  //Get Printify Data
+  let printifyOrders = await getPrintifyOrders(firstOrderNum, lastOrderNum);
+  let totalPrintifyCost = getPrintifyCost(printifyOrders);
+
+  //get Facebook Data
+  const campaignId = "120201248481810630";
+  const fbAccessToken = process.env.FB_ACCESS_TOKEN;
+  console.log("startDate", startDate, addDaysToDate(endDate, -1));
+  let metaAdsOverview = await getFacebookAds(
+    campaignId,
+    fbAccessToken,
+    startDate,
+    addDaysToDate(endDate, -1)
+  );
+
+  //get Facebook Budget Data
+  metaAdsOverview = await Promise.all(
+    metaAdsOverview.data.map(async (ad) => {
+      const budget = await getAdBudget(ad.adset_id, fbAccessToken);
+      console.log("budget", budget);
+      ad.budget = (budget.daily_budget / 100.0).toFixed(2);
+      return ad;
+    })
+  );
+
+  //Process Facebook Data
+  let metaAdsFinal = 0;
+  let metaAdsCurrent = 0;
+  metaAdsOverview.forEach((ad) => {
+    metaAdsFinal += parseFloat(ad.budget);
+    metaAdsCurrent += parseFloat(ad.spend);
+  });
+
+  //calculate total cashback
+  let cashback = (totalPrintifyCost + metaAdsFinal) * 0.03;
+
+  //zip Printify and Shopify Order Data together
+  const ordersArray = [];
+  console.log("firstOrderNum:", firstOrderNum, "numOrders:", numOrders);
+  for (let i = firstOrderNum; i < firstOrderNum + numOrders; i++) {
+    const printifyOrder = printifyOrders.find((order) => {
+      return order?.orderNumber === i;
+    });
+    const shopifyOrder = shopifyOrders.find((order) => {
+      return order?.orderNumber === i;
+    });
+    let order = {
+      shopifyLineItems: shopifyOrder?.lineItems,
+      printifyNumLineItems: printifyOrder?.numLineItems,
+      orderNumber: i,
+      orderDate: shopifyOrder?.createdAt,
+      customerName: shopifyOrder?.customer,
+      revenue: shopifyOrder?.revenue,
+      cost: printifyOrder?.totalCost,
+      shipping: printifyOrder?.totalShipping,
+      tax: printifyOrder?.totalTax,
+    };
+    if (
+      order.shipping &&
+      order.orderNumber &&
+      order.shopifyLineItems &&
+      order.printifyNumLineItems
+    ) {
+      ordersArray.push(order);
+    }
+  }
+  console.log(ordersArray[ordersArray.length - 1]);
+  // printStats(
+  //   shopifyGrossRevenue,
+  //   totalPrintifyCost,
+  //   metaAdsFinal,
+  //   cashback,
+  //   extraCosts
+  // );
+
+  const dailyProfit = (
+    shopifyGrossRevenue -
+    totalPrintifyCost -
+    metaAdsFinal -
+    extraCosts
+  ).toFixed(2);
+
+  const currentProfit = (
+    shopifyGrossRevenue -
+    totalPrintifyCost -
+    metaAdsCurrent -
+    extraCosts
+  ).toFixed(2);
+
+  const dateRangeData = {
+    profit: { daily: dailyProfit, current: currentProfit },
+    ads: { metaAdsOverview },
+    meta: {
+      dailyBudget: metaAdsFinal,
+      currentSpend: metaAdsCurrent,
+    },
+    shopify: { revenue: shopifyRevenue, grossRevenue: shopifyGrossRevenue },
+    printify: { cost: totalPrintifyCost },
+    orders: ordersArray,
+    datePreset: datePreset,
+  };
+
+  return dateRangeData;
+}
+
+function getDatePreset(startDate: string, endDate: string) {
+  const currentDate = new Date().toLocaleDateString("en-CA");
+  let datePreset = "custom";
+  if (currentDate === startDate && currentDate === endDate) {
+    datePreset = "today";
+  } else if (
+    addDaysToDate(currentDate, -1) === startDate &&
+    addDaysToDate(currentDate, -1) === endDate
+  ) {
+    datePreset = "yesterday";
+  }
+  if (currentDate === startDate && addDaysToDate(currentDate, -6) === endDate) {
+    datePreset = "last7d";
+  }
+  return datePreset;
+}
+// Utility function to get today's date in the format YYYY-MM-DD
+function getCurrentDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }

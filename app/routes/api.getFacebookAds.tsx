@@ -17,9 +17,16 @@ export async function action({ request }) {
     return json({ error: "Failed to fetch Facebook Ads data" }, 500);
   }
 }
-export async function getFacebookAds(campaignId, accessToken) {
-  const apiUrl = `https://graph.facebook.com/v18.0/${campaignId}/insights?fields=adset_name,adset_id,impressions,clicks,cost_per_inline_link_click,conversions,cpm,reach,inline_link_click_ctr,spend&date_preset=today&level=adset`;
-
+export async function getFacebookAds(
+  campaignId,
+  accessToken,
+  startDate: string,
+  endDate: string
+) {
+  const fields =
+    "adset_name,adset_id,impressions,clicks,cost_per_inline_link_click,conversions,cpm,reach,inline_link_click_ctr,spend";
+  const apiUrl = `https://graph.facebook.com/v18.0/${campaignId}/insights?fields=${fields}&level=adset&time_range={'since':'${startDate}','until':'${endDate}'}`;
+  console.log(apiUrl);
   try {
     const response = await fetch(apiUrl, {
       headers: {
@@ -28,6 +35,7 @@ export async function getFacebookAds(campaignId, accessToken) {
     });
 
     if (!response.ok) {
+      console.error(response.status);
       throw new Error("Failed to fetch Facebook Ads data");
     }
 
