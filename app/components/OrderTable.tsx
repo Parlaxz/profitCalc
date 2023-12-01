@@ -71,7 +71,25 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
                         </p>
                         {order.shopifyLineItems?.map((lineItem) => {
                           return (
-                            <div key={lineItem?.title}>{lineItem?.title}</div>
+                            <div key={lineItem?.title} className="flex">
+                              {lineItem?.title}{" "}
+                              {["sweatshirt", "t-shirt", "hoodie"].some(
+                                (item) => {
+                                  if (
+                                    lineItem?.title
+                                      ?.toLowerCase()
+                                      .includes(item)
+                                  ) {
+                                    return true;
+                                  }
+                                  return false;
+                                }
+                              ) ? (
+                                ""
+                              ) : (
+                                <ExclamationTriangleIcon className="h-4 w-4 text-yellow-400 ml-2" />
+                              )}
+                            </div>
                           );
                         })}
                       </div>
