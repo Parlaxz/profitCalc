@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const cookie = (await dateRangeCookie.parse(cookieHeader)) || {};
 
   let { startDate, endDate } = cookie;
-  // let startDate = "2023-11-25",
+  // let startDate = "2023-11-30",
   //   endDate = "2023-11-30";
   if (!startDate) {
     startDate = "2023-11-29";

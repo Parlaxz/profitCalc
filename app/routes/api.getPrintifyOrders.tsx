@@ -131,7 +131,7 @@ export async function getPrintifyOrders(
   const foundPrismaOrders = printifyOrders
     .map((order) => {
       // Map Printify order properties to your PrintifyOrder model
-      console.log("printify", order);
+      // console.log("printify", order);
       if (order.metadata.shop_order_label === undefined) return null;
       return {
         orderNumber: parseInt(order.metadata.shop_order_label.slice(1)),
