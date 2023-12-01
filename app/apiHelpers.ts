@@ -111,26 +111,36 @@ export function getNumItems(orders: ShopifyOrder[]) {
 export async function getShopifyOrders(startDate: string, endDate: string) {
   // Step 1: Get the latest order from the database (assuming you are using Prisma)
   const latestOrder = await prisma.shopifyOrder.findFirst({
-    orderBy: { createdAt: "desc" },
+    orderBy: { orderNumber: "desc" },
   });
 
   // Step 2: Get the date of the latest order
   const dateOfLatestOrder = latestOrder?.createdAt ?? "";
-
+  console.log("dateOfLatestOrder", latestOrder);
   // Step 3: Call updateShopifyOrders to update orders with today's date
-  await updateShopifyOrders(dateOfLatestOrder, getCurrentDate());
+  await updateShopifyOrders(
+    latestOrder?.orderNumber ? latestOrder?.orderNumber : 1000,
+    dateOfLatestOrder,
+    getCurrentDate()
+  );
 
   // Step 4: Get all orders from the database between startDate and endDate
+  console.log("startu datu", startDate, endDate);
   const orders = await prisma.shopifyOrder.findMany({
     where: {
       AND: [{ createdAt: { gte: startDate } }, { createdAt: { lte: endDate } }],
     },
   });
   // Step 5: Return the orders
+  console.log("orders!!!", orders);
   return orders;
 }
 
-export async function updateShopifyOrders(startDate: string, endDate: string) {
+export async function updateShopifyOrders(
+  startOrderNumber: number,
+  startDate: string,
+  endDate: string
+) {
   const ShopifyID = "moshiproject";
   const shopifyAccessToken = process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
   const shopifyUrl = `https://${ShopifyID}.myshopify.com/admin/api/2023-04/graphql.json`;
@@ -147,7 +157,7 @@ export async function updateShopifyOrders(startDate: string, endDate: string) {
   while (hasNextPage) {
     const graphqlQuery = {
       query: `query ($cursor: String) {
-          orders(first: ${ordersPerPage}, after: $cursor, query: "created_at:>${startDate} created_at:<${endDate}") {
+          orders(first: ${ordersPerPage}, after: $cursor, query: "name:>${startOrderNumber}") {
             edges {
               cursor
               node {
@@ -199,7 +209,7 @@ export async function updateShopifyOrders(startDate: string, endDate: string) {
       }
       return response.json();
     });
-    console.log("shopifyData", shopifyData.data.orders.edges[0]);
+    console.log("shopifyData", shopifyData?.data?.orders?.edges[0]);
     const orders = shopifyData.data.orders.edges;
     // console.log("orders", orders);
     hasNextPage = shopifyData.data.orders.pageInfo.hasNextPage;
@@ -212,7 +222,7 @@ export async function updateShopifyOrders(startDate: string, endDate: string) {
           customer: order?.node?.customer?.displayName
             ? order?.node?.customer?.displayName
             : "",
-          createdAt: order?.node?.createdAt,
+          createdAt: getOrderDate(order?.node?.createdAt),
           orderNumber: parseInt(order?.node?.name?.slice(1)),
           lineItems: order?.node?.lineItems?.edges?.map((lineItem) => {
             return {
@@ -235,11 +245,11 @@ export async function updateShopifyOrders(startDate: string, endDate: string) {
 
   const setMultipleResult = await setShopifyOrders(allShopifyOrders);
   console.log("Set Multiple Result:", setMultipleResult);
-
+  prisma.shopifyOrder.createMany({
+    data: allShopifyOrders,
+  });
   if (allShopifyOrders.length > 0) {
-    return prisma.shopifyOrder.createMany({
-      data: allShopifyOrders,
-    });
+    return allShopifyOrders;
   } else {
     console.log("All provided orderNumbers already exist in the database.");
     return null; // or handle it as per your requirement
@@ -252,7 +262,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   const extraCosts = 0;
   let datePreset = getDatePreset(startDate, endDate);
 
-  endDate = addDaysToDate(endDate, 1);
+  const endDateAfter = addDaysToDate(endDate, 1);
   console.log("startDate:", startDate, "endDate:", endDate);
 
   //Get Shopify Data
@@ -261,7 +271,10 @@ export async function getDateRangeData(endDate: string, startDate: string) {
 
   //Process Shopify Data
   const numOrders = shopifyOrders.length;
-  const firstOrderNum = shopifyOrders[0]?.orderNumber;
+  const firstOrderNum = shopifyOrders.sort((a, b) => {
+    return a?.orderNumber - b?.orderNumber;
+  })[0]?.orderNumber;
+
   const lastOrderNum = shopifyOrders[shopifyOrders.length - 1]?.orderNumber;
   const shopifyGrossRevenue = getShopifyGrossRevenue(shopifyRevenue, numOrders);
 
@@ -277,7 +290,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
     campaignId,
     fbAccessToken,
     startDate,
-    addDaysToDate(endDate, -1)
+    endDate
   );
 
   //get Facebook Budget Data
@@ -322,12 +335,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
       shipping: printifyOrder?.totalShipping,
       tax: printifyOrder?.totalTax,
     };
-    if (
-      order.shipping &&
-      order.orderNumber &&
-      order.shopifyLineItems &&
-      order.printifyNumLineItems
-    ) {
+    if (order.orderNumber && order.shopifyLineItems) {
       ordersArray.push(order);
     }
   }
@@ -394,3 +402,13 @@ function getCurrentDate() {
   const day = String(today.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+const getOrderDate = (rawDate) => {
+  const orderDate = new Date(`${rawDate}`);
+
+  // Set the time zone offset for GMT-6 (CST)
+  orderDate.setHours(orderDate.getHours() - 6);
+
+  // Get the formatted date string in "YYYY-MM-DD" format
+  const gmtMinus6Date = orderDate.toISOString().split("T")[0];
+  return gmtMinus6Date;
+};
