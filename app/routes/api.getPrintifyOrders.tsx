@@ -55,6 +55,7 @@ export async function getPrintifyOrders(
 
   // Function to fetch a batch of orders
   const fetchPrintifyBatch = async (pageNumber: number) => {
+    console.log("Fetching Printify page " + pageNumber);
     const printifyData = await fetch(printifyEndpoint + "?page=" + pageNumber, {
       method: "GET",
       headers: printifyHeaders,
@@ -76,13 +77,14 @@ export async function getPrintifyOrders(
     const batchPromises = [];
 
     // Fetch orders in batches of 10
-    for (let i = 0; i < 5 && pageNum < 30; i++) {
+    for (let i = 0; i < 1 && pageNum < 30; i++) {
       batchPromises.push(fetchPrintifyBatch(pageNum));
       pageNum += 1;
     }
-
+    console.log("awaiting batches: " + batchPromises);
     // Wait for all requests in the batch to complete
     const batches = await Promise.all(batchPromises);
+    console.log("finshed awaiting batches ");
 
     // Flatten the array of batches
     const printifyData = batches.flat();
