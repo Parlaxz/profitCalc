@@ -329,6 +329,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
       ordersArray.push(order);
     }
   }
+  const numItems = getNumItems(shopifyOrders);
   console.log("lastOrder", ordersArray[ordersArray.length - 1]);
   // printStats(
   //   shopifyGrossRevenue,
@@ -363,6 +364,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
     printify: { cost: totalPrintifyCost },
     orders: ordersArray,
     datePreset: datePreset,
+    stats: { cashback: cashback, numOrders: numOrders, numItems: numItems },
   };
 
   return dateRangeData;

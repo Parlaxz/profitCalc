@@ -205,7 +205,7 @@ function DashboardPage(pageData) {
                   <ShoppingBagIcon className="h-8 w-8 text-white" />
                 </div>
                 <div className=" font-bold text-4xl">
-                  ${pageData.shopify.grossRevenue.toFixed(2)}{" "}
+                  ${pageData.shopify.grossRevenue.toFixed(2)}
                   <span className="text-neutral-300 text-xl">
                     / {pageData.shopify.revenue.toFixed(2)}
                   </span>
@@ -215,18 +215,35 @@ function DashboardPage(pageData) {
             </Card>
             <Card>
               <>
-                {" "}
                 <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
                   <PrinterIcon className="h-8 w-8 text-white" />
                 </div>
                 <div className=" font-bold text-4xl">
-                  ${pageData.printify.cost.toFixed(2)}{" "}
+                  ${pageData.printify.cost.toFixed(2)}
                 </div>
                 <div className="text-neutral-400">Printify Cost</div>
               </>
             </Card>
           </div>
-          <Card></Card>
+          <div className="grid grid-flow-col grid-cols-2 gap-4">
+            <Card>
+              <div>
+                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                  <span>Cashback:</span>
+                  <span>${pageData.stats.cashback.toFixed(2)}</span>
+                </div>
+                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                  <span>Total Items:</span>
+                  <span>{pageData.stats.numItems}</span>
+                </div>
+                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                  <span>Total Orders:</span>
+                  <span>{pageData.stats.numOrders}</span>
+                </div>
+              </div>
+            </Card>
+            <Card></Card>
+          </div>
         </div>
         <Card>
           <>
