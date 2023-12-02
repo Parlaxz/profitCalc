@@ -258,10 +258,12 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   const endDateAfter = addDaysToDate(endDate, 1);
 
   //Get Shopify Data
+  console.log("Getting Shopify");
   const shopifyOrders = await getShopifyOrders(startDate, endDate);
   const shopifyRevenue = getShopifyRevenue(shopifyOrders);
 
   //Process Shopify Data
+  console.log("Processing");
   const numOrders = shopifyOrders.length;
   const firstOrderNum = shopifyOrders.sort((a, b) => {
     return a?.orderNumber - b?.orderNumber;
@@ -271,10 +273,12 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   const shopifyGrossRevenue = getShopifyGrossRevenue(shopifyRevenue, numOrders);
 
   //Get Printify Data
+  console.log("Printify");
   let printifyOrders = await getPrintifyOrders(firstOrderNum, lastOrderNum);
   let totalPrintifyCost = getPrintifyCost(printifyOrders);
 
   //get Facebook Data
+  console.log("FB");
   const campaignId = "120201248481810630";
   const fbAccessToken = process.env.FB_ACCESS_TOKEN;
   let metaAdsOverview = await getFacebookAds(
