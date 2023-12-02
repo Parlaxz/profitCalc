@@ -119,8 +119,9 @@ export default function Index() {
           Analytics
         </button>
       </div>
-      {pageType === "dashboard" && DashboardPage(pageData)}
-      {pageType === "analytics" && AnalyticsPage(pageData)}
+      {pageType === "dashboard" && pageData && DashboardPage(pageData)}
+
+      {pageType === "analytics" && pageData && AnalyticsPage(pageData)}
     </div>
   );
 }
@@ -146,17 +147,17 @@ function DashboardPage(pageData) {
           <DateButton
             text="today"
             datePreset="today"
-            selected={pageData.datePreset === "today"}
+            selected={pageData?.datePreset === "today"}
           />
           <DateButton
             text="yesterday"
             datePreset="yesterday"
-            selected={pageData.datePreset === "yesterday"}
+            selected={pageData?.datePreset === "yesterday"}
           />
           <DateButton
             text="Last 7 Days"
             datePreset="last7d"
-            selected={pageData.datePreset === "last7d"}
+            selected={pageData?.datePreset === "last7d"}
           />
 
           <span className="w-px bg-neutral-300"></span>
@@ -177,9 +178,9 @@ function DashboardPage(pageData) {
                   <ArrowTrendingUpIcon className="h-8 w-8 text-white" />
                 </div>
                 <div className=" font-bold text-4xl">
-                  ${pageData.profit.daily}
+                  ${pageData?.profit?.daily}
                   <span className="text-blue-300 text-xl">
-                    / {pageData.profit.current}
+                    / {pageData?.profit?.current}
                   </span>
                 </div>
                 <div className="text-neutral-100">Profit</div>
@@ -191,9 +192,9 @@ function DashboardPage(pageData) {
                   <NewspaperIcon className="h-8 w-8 text-white" />
                 </div>
                 <div className=" font-bold text-4xl">
-                  ${pageData.meta.currentSpend.toFixed(2)}
+                  ${pageData?.meta?.currentSpend.toFixed(2)}
                   <span className="text-neutral-300 text-xl">
-                    / {pageData.meta.dailyBudget.toFixed(2)}
+                    / {pageData?.meta?.dailyBudget.toFixed(2)}
                   </span>
                 </div>
                 <div className="text-neutral-400">Facebook Spend</div>
@@ -205,9 +206,9 @@ function DashboardPage(pageData) {
                   <ShoppingBagIcon className="h-8 w-8 text-white" />
                 </div>
                 <div className=" font-bold text-4xl">
-                  ${pageData.shopify.grossRevenue.toFixed(2)}
+                  ${pageData?.shopify?.grossRevenue?.toFixed(2)}
                   <span className="text-neutral-300 text-xl">
-                    / {pageData.shopify.revenue.toFixed(2)}
+                    / {pageData?.shopify?.revenue?.toFixed(2)}
                   </span>
                 </div>
                 <div className="text-neutral-400">Shopify Revenue</div>
@@ -219,7 +220,7 @@ function DashboardPage(pageData) {
                   <PrinterIcon className="h-8 w-8 text-white" />
                 </div>
                 <div className=" font-bold text-4xl">
-                  ${pageData.printify.cost.toFixed(2)}
+                  ${pageData?.printify?.cost?.toFixed(2)}
                 </div>
                 <div className="text-neutral-400">Printify Cost</div>
               </>
@@ -230,15 +231,15 @@ function DashboardPage(pageData) {
               <div>
                 <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Cashback:</span>
-                  <span>${pageData.stats.cashback.toFixed(2)}</span>
+                  <span>${pageData?.stats?.cashback?.toFixed(2)}</span>
                 </div>
                 <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Total Items:</span>
-                  <span>{pageData.stats.numItems}</span>
+                  <span>{pageData?.stats?.numItems}</span>
                 </div>
                 <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Total Orders:</span>
-                  <span>{pageData.stats.numOrders}</span>
+                  <span>{pageData?.stats?.numOrders}</span>
                 </div>
               </div>
             </Card>
@@ -256,7 +257,7 @@ function DashboardPage(pageData) {
                 Orders
               </div>
             </div>
-            <OrderTable orders={pageData.orders} />
+            <OrderTable orders={pageData?.orders} />
           </>
         </Card>
       </div>
