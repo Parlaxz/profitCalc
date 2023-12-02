@@ -53,12 +53,9 @@ export async function getPrintifyOrders(
   let allPrintifyData: any[] = [];
   const foundOrders: number[] = [];
 
-  while (missingOrders.length > 0 && pageTolerance < 10 && pageNum < 30) {
-    if (pageTolerance !== 0) {
-      pageTolerance += 1;
-    }
-    //get a batch of orders
-    const printifyData = await fetch(printifyEndpoint + "?page=" + pageNum, {
+  // Function to fetch a batch of orders
+  const fetchPrintifyBatch = async (pageNumber: number) => {
+    const printifyData = await fetch(printifyEndpoint + "?page=" + pageNumber, {
       method: "GET",
       headers: printifyHeaders,
     }).then((response) => {
@@ -67,15 +64,34 @@ export async function getPrintifyOrders(
       }
       return response.json();
     });
-    allPrintifyData = [...allPrintifyData, ...printifyData.data];
-    console.log("alldatalengtgh", allPrintifyData.length);
-    // console.log("printifyData: ", printifyData.data);
-    //check if any of the missing orders are inside that batch
-    // eslint-disable-next-line no-loop-func
-    missingOrders.forEach(async (orderNum) => {
-      // console.log("orderNum: ", orderNum);
-      printifyData.data.forEach(async (order) => {
-        // console.log("order: ", order);
+
+    return printifyData.data;
+  };
+
+  while (missingOrders.length > 0 && pageTolerance < 10 && pageNum < 30) {
+    if (pageTolerance !== 0) {
+      pageTolerance += 1;
+    }
+
+    const batchPromises = [];
+
+    // Fetch orders in batches of 10
+    for (let i = 0; i < 10 && pageNum < 30; i++) {
+      batchPromises.push(fetchPrintifyBatch(pageNum));
+      pageNum += 1;
+    }
+
+    // Wait for all requests in the batch to complete
+    const batches = await Promise.all(batchPromises);
+
+    // Flatten the array of batches
+    const printifyData = batches.flat();
+
+    allPrintifyData = [...allPrintifyData, ...printifyData];
+
+    // Check if any of the missing orders are inside that batch
+    missingOrders.forEach((orderNum) => {
+      printifyData.forEach((order) => {
         if (
           order.metadata.shop_order_label &&
           parseInt(order.metadata.shop_order_label.slice(1)) === orderNum
@@ -89,13 +105,11 @@ export async function getPrintifyOrders(
         }
       });
     });
-    missingOrders = missingOrders.filter((order) => {
-      return !foundOrders.includes(order);
-    });
 
-    pageNum = pageNum + 1;
+    missingOrders = missingOrders.filter(
+      (order) => !foundOrders.includes(order)
+    );
   }
-
   // Step 4: Add Printify orders to the database
   let lastOrderNumber = 0;
   // const prismaPrintifyOrders = allPrintifyData

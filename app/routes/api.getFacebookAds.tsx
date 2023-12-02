@@ -3,7 +3,6 @@
 import { json } from "@remix-run/node";
 
 export async function action({ request }) {
-  console.log("reaached");
   const campaignId = "120201248481810630"; // Replace with your ad set ID
   const accessToken =
     "EAAKS4ZCAJQzEBOxkNSrH4dgNHMbmjPiitOGvZAam32xzc4lAZBuTxwTwR4mrekcovztqzVQQYamSryYGMpJFdpZCfMoRPbxroGF6CPkTscLcvcfJJiWZBU5BFOYdx4UdZC9GH4ezZAQcZCDdvsZBmxYSqNn6gzEGyeLmdoMjYoYKVjceWVZB2dUoGx50XZANaftZBAreGH7drnEf"; // Replace with your access token

@@ -8,5 +8,3 @@ export const dateRangeCookie = createCookie("date_range", {
   sameSite: "lax",
   secure: true,
 });
-
-// export additional functions related to the date range if needed

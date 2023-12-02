@@ -86,7 +86,6 @@ export function getPrintifyCost(
 export function getShopifyRevenue(shopifyOrders: any[]) {
   let shopifyRevenue = 0;
   shopifyOrders.forEach((order: ShopifyOrderType) => {
-    // console.log("shopifyRevenue", shopifyRevenue);
     shopifyRevenue += order.revenue;
   });
   return shopifyRevenue;
@@ -116,7 +115,6 @@ export async function getShopifyOrders(startDate: string, endDate: string) {
 
   // Step 2: Get the date of the latest order
   const dateOfLatestOrder = latestOrder?.createdAt ?? "";
-  console.log("dateOfLatestOrder", latestOrder);
   // Step 3: Call updateShopifyOrders to update orders with today's date
   await updateShopifyOrders(
     latestOrder?.orderNumber ? latestOrder?.orderNumber : 1000,
@@ -132,7 +130,6 @@ export async function getShopifyOrders(startDate: string, endDate: string) {
     },
   });
   // Step 5: Return the orders
-  console.log("orders!!!", orders);
   return orders;
 }
 
@@ -211,7 +208,6 @@ export async function updateShopifyOrders(
     });
     console.log("shopifyData", shopifyData?.data?.orders?.edges[0]);
     const orders = shopifyData.data.orders.edges;
-    // console.log("orders", orders);
     hasNextPage = shopifyData.data.orders.pageInfo.hasNextPage;
 
     allShopifyOrders = [
@@ -241,10 +237,7 @@ export async function updateShopifyOrders(
       await delay(parseInt(shopifyData.extensions.cost.actualQueryCost) / 50);
   }
 
-  console.log("allShopifyOrders[0]", allShopifyOrders[0]);
-
   const setMultipleResult = await setShopifyOrders(allShopifyOrders);
-  console.log("Set Multiple Result:", setMultipleResult);
   prisma.shopifyOrder.createMany({
     data: allShopifyOrders,
   });
@@ -263,7 +256,6 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   let datePreset = getDatePreset(startDate, endDate);
 
   const endDateAfter = addDaysToDate(endDate, 1);
-  console.log("startDate:", startDate, "endDate:", endDate);
 
   //Get Shopify Data
   const shopifyOrders = await getShopifyOrders(startDate, endDate);
@@ -285,7 +277,6 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   //get Facebook Data
   const campaignId = "120201248481810630";
   const fbAccessToken = process.env.FB_ACCESS_TOKEN;
-  console.log("startDate", startDate, addDaysToDate(endDate, -1));
   let metaAdsOverview = await getFacebookAds(
     campaignId,
     fbAccessToken,
@@ -297,7 +288,6 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   metaAdsOverview = await Promise.all(
     metaAdsOverview.data.map(async (ad) => {
       const budget = await getAdBudget(ad.adset_id, fbAccessToken);
-      console.log("budget", budget);
       ad.budget = (budget.daily_budget / 100.0).toFixed(2);
       return ad;
     })
@@ -339,7 +329,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
       ordersArray.push(order);
     }
   }
-  console.log(ordersArray[ordersArray.length - 1]);
+  console.log("lastOrder", ordersArray[ordersArray.length - 1]);
   // printStats(
   //   shopifyGrossRevenue,
   //   totalPrintifyCost,
@@ -388,8 +378,10 @@ function getDatePreset(startDate: string, endDate: string) {
     addDaysToDate(currentDate, -1) === endDate
   ) {
     datePreset = "yesterday";
-  }
-  if (currentDate === startDate && addDaysToDate(currentDate, -6) === endDate) {
+  } else if (
+    currentDate === endDate &&
+    addDaysToDate(currentDate, -6) === startDate
+  ) {
     datePreset = "last7d";
   }
   return datePreset;
