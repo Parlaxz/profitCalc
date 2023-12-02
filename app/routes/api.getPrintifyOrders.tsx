@@ -76,7 +76,7 @@ export async function getPrintifyOrders(
     const batchPromises = [];
 
     // Fetch orders in batches of 10
-    for (let i = 0; i < 10 && pageNum < 30; i++) {
+    for (let i = 0; i < 5 && pageNum < 30; i++) {
       batchPromises.push(fetchPrintifyBatch(pageNum));
       pageNum += 1;
     }
