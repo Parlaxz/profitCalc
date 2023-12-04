@@ -27,7 +27,6 @@
     "framer-motion": "^6.5.1",
     "isbot": "^3.6.8",
     "lodash": "^4.17.21",
-    "nivo": "^0.31.0",
     "react": "^18.2.0",
     "react-datepicker": "^4.24.0",
     "react-dom": "^18.2.0",
