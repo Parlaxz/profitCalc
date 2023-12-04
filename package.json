@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
-    "@nivo/bar": "^0.80.0",
-    "@nivo/core": "^0.80.0",
-    "@nivo/line": "^0.80.0",
+    "@nivo/bar": "^0.83.0",
+    "@nivo/core": "^0.83.0",
+    "@nivo/line": "^0.83.0",
     "@prisma/client": "^5.5.2",
     "@remix-run/css-bundle": "^2.2.0",
     "@remix-run/node": "^2.2.0",
