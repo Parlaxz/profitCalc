@@ -33,3 +33,20 @@ model ShopifyOrder {
   createdAt   String
   lineItems   Json[]
 }
+
+model DailyAnalytics {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  date     String
+  data     Json
+  expenses Json[]
+}
+
+model Expense {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  amount      Int
+  startDate   String
+  endDate     String
+  frequency   Int
+  isRecurring Boolean
+}

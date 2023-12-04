@@ -5,7 +5,25 @@ import type { OrderTableProps } from "~/typeDefinitions";
 // OrderTable.js
 export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [displayedOrders, setDisplayedOrders] = useState(orders);
+  const [filterAliexpress, setFilterAliexpress] = useState(false);
 
+  //const aliexpressOrders = filter for aliexpress orders
+  const aliexpressOrders = orders.filter((order) => {
+    return order.shopifyLineItems.some((lineItem) =>
+      ["figure", "3d", "lamp", "figurine"].some(function (v) {
+        return lineItem?.title.indexOf(v) >= 0;
+      })
+    );
+  });
+
+  useEffect(() => {
+    if (filterAliexpress) {
+      setDisplayedOrders(aliexpressOrders);
+    } else setDisplayedOrders(orders);
+  }, [filterAliexpress, orders]);
+
+  console.log("aliexpressOrders", aliexpressOrders);
   const handleRowClick = (index: number) => {
     setExpandedRow(expandedRow === index ? null : index);
   };
@@ -14,6 +32,9 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
   }, []);
   return (
     <div className="container mx-auto mt-8 overflow-scroll">
+      <button onClick={() => setFilterAliexpress(!filterAliexpress)}>
+        Aliexpress
+      </button>
       <table className="min-w-full bg-white">
         <thead>
           <tr>
@@ -24,8 +45,8 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
           </tr>
         </thead>
         <tbody>
-          {orders &&
-            orders
+          {displayedOrders &&
+            displayedOrders
               .sort((a, b) => {
                 return b.orderNumber - a?.orderNumber;
               })

@@ -71,6 +71,14 @@ export async function getDefaultDateRange(datePreset: string) {
         options
       );
       return { startDate: formattedLast7DaysStart, endDate: formattedToday };
+    case "last30d":
+      const last30DaysStart = new Date(today);
+      last30DaysStart.setDate(today.getDate() - 29);
+      const formattedLast30DaysStart = last30DaysStart.toLocaleDateString(
+        "en-CA",
+        options
+      );
+      return { startDate: formattedLast30DaysStart, endDate: formattedToday };
     // Add more cases for other date presets if needed
     default:
       return { startDate: formattedToday, endDate: formattedToday };
@@ -118,8 +126,9 @@ export const Card = ({ children = <></>, className = "" }) => {
   );
 };
 function DashboardPage(pageData) {
+  console.log("datepresetttt", pageData?.datePreset);
   return (
-    <div className="max-h-screen h-screen w-[87.5%] bg-white">
+    <div className="max-h-screen h-screen w-[87.5%] bg-white overflow-scroll">
       <div className="flex items-center justify-between font-bold text-3xl p-8 pb-0">
         <div>Daily Dashboard</div>
         <div className="grid grid-rows-1 grid-flow-col gap-2">
@@ -137,6 +146,11 @@ function DashboardPage(pageData) {
             text="Last 7 Days"
             datePreset="last7d"
             selected={pageData?.datePreset === "last7d"}
+          />
+          <DateButton
+            text="Last 30 Days"
+            datePreset="last30d"
+            selected={pageData?.datePreset === "last30d"}
           />
 
           <span className="w-px bg-neutral-300"></span>
@@ -226,8 +240,7 @@ function DashboardPage(pageData) {
           </div>
         </div>
         <Card>
-          <>
-            {" "}
+          <div className="flex flex-col h-max-full overflow-hidden">
             <div>
               <div className="w-fit h-fit p-2 bg-neutral-100 rounded-full">
                 <ShoppingCartIcon className="h-8 w-8 " />
@@ -237,197 +250,9 @@ function DashboardPage(pageData) {
               </div>
             </div>
             <OrderTable orders={pageData?.orders} />
-          </>
-        </Card>
-      </div>
-    </div>
-  );
-}
-function AnalyticsPage(pageData) {
-  return (
-    <div className="max-h-screen h-screen w-[87.5%] bg-white">
-      <div className="flex items-center justify-between font-bold text-3xl p-8 pb-0">
-        <div>Analytics Page</div>
-        <div className="grid grid-rows-1 grid-flow-col gap-2">
-          <DateButton
-            text="today"
-            datePreset="today"
-            selected={pageData.datePreset === "today"}
-          />
-          <DateButton
-            text="yesterday"
-            datePreset="yesterday"
-            selected={pageData.datePreset === "yesterday"}
-          />
-          <DateButton
-            text="Last 7 Days"
-            datePreset="last7d"
-            selected={pageData.datePreset === "last7d"}
-          />
-
-          <span className="w-px bg-neutral-300"></span>
-          <button className="text-white font-semibold text-base bg-gradient-to-tr from-cyan-500 to-blue-500 p-4 py-2 rounded-full">
-            Refresh All
-          </button>
-        </div>
-      </div>
-      {/* Main Body */}
-      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-1 gap-8 w-full h-full md:p-8">
-        {" "}
-        <div className="grid  md:grid-rows-2 grid-cols-1 gap-8">
-          {" "}
-          <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 w-full h-full ">
-            <Card className="text-white bg-gradient-to-tr from-cyan-500 to-blue-500 h-48">
-              <>
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-800 to-blue-800">
-                  <ArrowTrendingUpIcon className="h-8 w-8 text-white" />
-                </div>
-                <div className=" font-bold text-4xl">
-                  ${pageData.profit.daily}
-                  <span className="text-blue-300 text-xl">
-                    / {pageData.profit.current}
-                  </span>
-                </div>
-                <div className="text-neutral-100">Profit</div>
-              </>
-            </Card>
-            <Card>
-              <>
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
-                  <NewspaperIcon className="h-8 w-8 text-white" />
-                </div>
-                <div className=" font-bold text-4xl">
-                  ${pageData.meta.currentSpend.toFixed(2)}
-                  <span className="text-neutral-300 text-xl">
-                    / {pageData.meta.dailyBudget.toFixed(2)}
-                  </span>
-                </div>
-                <div className="text-neutral-400">Facebook Spend</div>
-              </>
-            </Card>
-            <Card>
-              <>
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
-                  <ShoppingBagIcon className="h-8 w-8 text-white" />
-                </div>
-                <div className=" font-bold text-4xl">
-                  ${pageData.shopify.grossRevenue.toFixed(2)}{" "}
-                  <span className="text-neutral-300 text-xl">
-                    / {pageData.shopify.revenue.toFixed(2)}
-                  </span>
-                </div>
-                <div className="text-neutral-400">Shopify Revenue</div>
-              </>
-            </Card>
-            <Card>
-              <>
-                {" "}
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
-                  <PrinterIcon className="h-8 w-8 text-white" />
-                </div>
-                <div className=" font-bold text-4xl">
-                  ${pageData.printify.cost.toFixed(2)}{" "}
-                </div>
-                <div className="text-neutral-400">Printify Cost</div>
-              </>
-            </Card>
           </div>
-          <Card></Card>
-        </div>
-        <Card>
-          <>
-            {" "}
-            <div>
-              <div className="w-fit h-fit p-2 bg-neutral-100 rounded-full">
-                <ShoppingCartIcon className="h-8 w-8 " />
-              </div>
-              <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4">
-                Orders
-              </div>
-            </div>
-            <OrderTable orders={pageData.orders} />
-          </>
         </Card>
       </div>
-    </div>
-  );
-}
-// DateButtons.jsx
-
-function DateButtons() {
-  return (
-    <div>
-      <Form method="post">
-        <button
-          type="submit"
-          form="todayForm"
-          className="text-blue-500 font-semibold text-base border-blue-500 border-2 p-4 py-2 rounded-full"
-        >
-          Today
-        </button>
-        <input type="hidden" name="startDate" value="today" form="todayForm" />
-        <input type="hidden" name="endDate" value="today" form="todayForm" />
-
-        <button
-          type="submit"
-          form="yesterdayForm"
-          className="text-blue-500 font-semibold text-base border-blue-500 border-2 p-4 py-2 rounded-full"
-        >
-          Yesterday
-        </button>
-        <input
-          type="hidden"
-          name="startDate"
-          value="yesterday"
-          form="yesterdayForm"
-        />
-        <input
-          type="hidden"
-          name="endDate"
-          value="yesterday"
-          form="yesterdayForm"
-        />
-
-        <button
-          type="submit"
-          form="last7DaysForm"
-          className="text-blue-500 font-semibold text-base border-blue-500 border-2 p-4 py-2 rounded-full"
-        >
-          Last 7 Days
-        </button>
-        <input
-          type="hidden"
-          name="startDate"
-          value="last-7-days"
-          form="last7DaysForm"
-        />
-        <input
-          type="hidden"
-          name="endDate"
-          value="today"
-          form="last7DaysForm"
-        />
-
-        <button
-          type="submit"
-          form="lastMonthForm"
-          className="text-blue-500 font-semibold text-base border-blue-500 border-2 p-4 py-2 rounded-full"
-        >
-          Last Month
-        </button>
-        <input
-          type="hidden"
-          name="startDate"
-          value="last-month"
-          form="lastMonthForm"
-        />
-        <input
-          type="hidden"
-          name="endDate"
-          value="today"
-          form="lastMonthForm"
-        />
-      </Form>
     </div>
   );
 }

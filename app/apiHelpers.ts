@@ -49,7 +49,7 @@ export function addDaysToDate(endDate: string, amount: number) {
   endDate = endDateObject.toISOString().split("T")[0];
   return endDate;
 }
-function delay(seconds: number): Promise<void> {
+export function delay(seconds: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve();
@@ -280,9 +280,10 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   //get Facebook Data
   console.log("FB");
   const campaignId = "120201248481810630";
+  const adAccountId = "act_476856863674743";
   const fbAccessToken = process.env.FB_ACCESS_TOKEN;
   let metaAdsOverview = await getFacebookAds(
-    campaignId,
+    adAccountId,
     fbAccessToken,
     startDate,
     endDate
@@ -389,6 +390,11 @@ function getDatePreset(startDate: string, endDate: string) {
     addDaysToDate(currentDate, -6) === startDate
   ) {
     datePreset = "last7d";
+  } else if (
+    currentDate === endDate &&
+    addDaysToDate(currentDate, -29) === startDate
+  ) {
+    datePreset = "last30d";
   }
   return datePreset;
 }

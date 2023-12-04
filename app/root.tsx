@@ -9,9 +9,13 @@ import {
 } from "@remix-run/react";
 
 import styles from "./styles/app.css";
+import datePicker from "./styles/datePicker.css";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: datePicker },
+  ];
 };
 
 export default function App() {

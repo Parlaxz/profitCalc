@@ -14,23 +14,31 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    
     "@heroicons/react": "^2.0.18",
+    "@nivo/bar": "^0.80.0",
+    "@nivo/core": "^0.80.0",
+    "@nivo/line": "^0.80.0",
     "@prisma/client": "^5.5.2",
     "@remix-run/css-bundle": "^2.2.0",
     "@remix-run/node": "^2.2.0",
     "@remix-run/react": "^2.2.0",
     "@remix-run/serve": "^2.2.0",
+    "@types/react-datepicker": "^4.19.3",
     "framer-motion": "^6.5.1",
     "isbot": "^3.6.8",
+    "lodash": "^4.17.21",
+    "nivo": "^0.31.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-datepicker": "^4.24.0",
+    "react-dom": "^18.2.0",
+    "react-flatpickr": "^3.10.13"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.2.0",
     "@remix-run/eslint-config": "^2.2.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "@types/react-flatpickr": "^3.8.11",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
     "eslint": "^8.38.0",

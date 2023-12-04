@@ -42,7 +42,7 @@ export async function getPrintifyOrders(
   let allPrintifyData: any[] = [];
   const foundOrders: number[] = [];
 
-  while (missingOrders.length > 0 && pageTolerance < 10 && pageNum < 30) {
+  while (missingOrders.length > 0 && pageTolerance < 10 /**&& pageNum < 30 */) {
     if (pageTolerance !== 0) {
       pageTolerance += 1;
     }
