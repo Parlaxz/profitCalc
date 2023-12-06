@@ -303,18 +303,6 @@ const MyResponsiveLine = ({ dailyAnalytics }) => {
       data: profitData,
     });
   }
-
-  if (showRevenue) {
-    const revenueData = transformedData.map((point) => ({
-      x: point.x,
-      y: point.Revenue,
-    }));
-    data.push({
-      id: "Revenue",
-      color: "hsl(60, 70%, 50%)",
-      data: revenueData,
-    });
-  }
   if (showCost) {
     const costData = transformedData.map((point) => ({
       x: point.x,
@@ -324,6 +312,17 @@ const MyResponsiveLine = ({ dailyAnalytics }) => {
       id: "Cost",
       color: "hsl(0, 70%, 50%)",
       data: costData,
+    });
+  }
+  if (showRevenue) {
+    const revenueData = transformedData.map((point) => ({
+      x: point.x,
+      y: point.Revenue,
+    }));
+    data.push({
+      id: "Revenue",
+      color: "hsl(60, 70%, 50%)",
+      data: revenueData,
     });
   }
 
