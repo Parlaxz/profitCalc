@@ -26,19 +26,20 @@ export async function action({ request }: ActionFunctionArgs) {
   console.log("lineItems", payload?.line_items);
   console.log("currentTotalPrice", payload?.current_total_price);
   console.log("currentSubTotalPrice", payload?.current_subtotal_price);
-  console.log("name", payload?.customer?.name);
+  console.log(
+    "name",
+    `${payload?.customer?.first_name} ${payload?.customer?.last_name}`
+  );
   const order = {
-    revenue: parseFloat(payload?.netPaymentSet?.shopMoney?.amount),
-    customer: payload?.customer?.display_name
-      ? payload?.customer?.display_name
-      : "",
+    revenue: parseFloat(payload?.current_total_price),
+    customer: `${payload?.customer?.first_name} ${payload?.customer?.last_name}`,
     createdAt: getOrderDate(payload?.created_at),
     orderNumber: parseInt(payload?.name?.slice(1)),
     lineItems: payload?.line_items?.map((lineItem) => {
       return {
         title: lineItem?.title,
         quantity: lineItem?.quantity,
-        price: lineItem?.originalUnitPriceSet?.shopMoney?.amount,
+        price: lineItem?.price,
       };
     }),
   };
