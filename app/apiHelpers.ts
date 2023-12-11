@@ -109,26 +109,27 @@ export function getNumItems(orders: ShopifyOrder[]) {
 
 export async function getShopifyOrders(startDate: string, endDate: string) {
   // Step 1: Get the latest order from the database (assuming you are using Prisma)
-  console.time("getLatestOrder");
-  const latestOrder = await prisma.shopifyOrder.findFirst({
-    orderBy: { orderNumber: "desc" },
-  });
-  console.timeEnd("getLatestOrder");
+  // console.time("getLatestOrder");
+  // const latestOrder = await prisma.shopifyOrder.findFirst({
+  //   orderBy: { orderNumber: "desc" },
+  // });
+  // console.timeEnd("getLatestOrder");
 
   // Step 2: Get the date of the latest order
-  const dateOfLatestOrder = latestOrder?.createdAt ?? "";
+  // const dateOfLatestOrder = latestOrder?.createdAt ?? "";
   // Step 3: Call updateShopifyOrders to update orders with today's date
-  console.time("update");
 
-  await updateShopifyOrders(
-    latestOrder?.orderNumber ? latestOrder?.orderNumber : 1000,
-    dateOfLatestOrder,
-    getCurrentDate()
-  );
-  console.timeEnd("update");
+  // console.time("update");
+
+  // await updateShopifyOrders(
+  //   latestOrder?.orderNumber ? latestOrder?.orderNumber : 1000,
+  //   dateOfLatestOrder,
+  //   getCurrentDate()
+  // );
+  // console.timeEnd("update");
 
   // Step 4: Get all orders from the database between startDate and endDate
-  console.time("getAllBW");
+  console.time("getAllOrders");
 
   const orders = await prisma.shopifyOrder.findMany({
     where: {
@@ -136,7 +137,7 @@ export async function getShopifyOrders(startDate: string, endDate: string) {
     },
   });
   // Step 5: Return the orders
-  console.timeEnd("getAllBW");
+  console.timeEnd("getAllOrders");
 
   return orders;
 }

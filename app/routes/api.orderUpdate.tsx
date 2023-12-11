@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { getOrderDate } from "~/apiHelpers";
 export const prisma = new PrismaClient();
