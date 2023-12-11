@@ -448,7 +448,7 @@ function getCurrentDate() {
   const day = String(today.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
-const getOrderDate = (rawDate) => {
+export const getOrderDate = (rawDate) => {
   const orderDate = new Date(`${rawDate}`);
 
   // Set the time zone offset for GMT-6 (CST)
