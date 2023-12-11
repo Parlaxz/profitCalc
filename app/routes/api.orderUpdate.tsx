@@ -23,8 +23,10 @@ export async function action({ request }: ActionFunctionArgs) {
   //   ]
   // }
   console.log("createdAt", payload?.created_at);
-  console.log("lineItems", payload?.lineItems);
-
+  console.log("lineItems", payload?.line_items);
+  console.log("currentTotalPrice", payload?.current_total_price);
+  console.log("currentSubTotalPrice", payload?.current_subtotal_price);
+  console.log("name", payload?.customer?.name);
   const order = {
     revenue: parseFloat(payload?.netPaymentSet?.shopMoney?.amount),
     customer: payload?.customer?.display_name
@@ -32,7 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
       : "",
     createdAt: getOrderDate(payload?.created_at),
     orderNumber: parseInt(payload?.name?.slice(1)),
-    lineItems: payload?.lineItems?.map((lineItem) => {
+    lineItems: payload?.line_items?.map((lineItem) => {
       return {
         title: lineItem?.title,
         quantity: lineItem?.quantity,
