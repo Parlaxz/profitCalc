@@ -22,6 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
   //     }
   //   ]
   // }
+  console.log("createdAt", payload?.createdAt);
   const order = {
     revenue: parseFloat(payload?.netPaymentSet?.shopMoney?.amount),
     customer: payload?.customer?.displayName
