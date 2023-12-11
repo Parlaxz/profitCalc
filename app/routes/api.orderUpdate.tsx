@@ -21,8 +21,9 @@ export async function action({ request }: ActionFunctionArgs) {
   };
   console.log("order", order);
 
-  prisma.shopifyOrder.create({
+  const prismaOrder = await prisma.shopifyOrder.create({
     data: order,
   });
+  console.log("prismaOrder", prismaOrder);
   return { status: 200, body: order };
 }
