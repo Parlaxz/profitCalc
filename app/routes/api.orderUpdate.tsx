@@ -10,7 +10,7 @@ export async function action({ request }: ActionFunctionArgs) {
     customer: `${payload?.customer?.first_name} ${payload?.customer?.last_name}`,
     createdAt: getOrderDate(payload?.created_at),
     orderNumber: parseInt(payload?.name?.slice(1)),
-    ip: payload?.browser_ip,
+    ip: payload?.browser_ip ?? "",
     lineItems: payload?.line_items?.map((lineItem) => {
       return {
         title: lineItem?.title,
