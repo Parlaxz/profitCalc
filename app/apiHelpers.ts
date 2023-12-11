@@ -344,7 +344,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   console.timeEnd("Process Facebook Data");
 
   //calculate total cashback
-  let cashback = (totalPrintifyCost + metaAdsFinal) * 0.03;
+  let cashback = (totalPrintifyCost + metaAdsCurrent) * 0.03;
 
   //zip Printify and Shopify Order Data together
   console.time("zip");
