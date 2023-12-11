@@ -70,6 +70,7 @@ export async function action({ request }: ActionFunctionArgs) {
     update: {
       timeUpdated: new Date().toISOString(),
       events: arr,
+      UTM: payload.utms,
     },
     create: {
       UTM: payload.utms,
