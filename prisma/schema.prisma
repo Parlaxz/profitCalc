@@ -50,3 +50,12 @@ model Expense {
   frequency   Int
   isRecurring Boolean
 }
+
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  timeCreated DateTime
+  timeUpdated DateTime
+  UTM         Json
+  ip          String   @unique
+  events      Json[]
+}

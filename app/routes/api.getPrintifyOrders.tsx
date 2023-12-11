@@ -75,7 +75,7 @@ export async function getPrintifyOrders(
   };
   console.timeEnd("getPrintify setup");
 
-  while (missingOrders.length > 0 && pageTolerance < 10 && pageNum < 30) {
+  while (missingOrders.length > 0 && pageTolerance < 10 && pageNum < 100) {
     if (pageTolerance !== 0) {
       pageTolerance += 1;
     }
@@ -83,7 +83,7 @@ export async function getPrintifyOrders(
     const batchPromises = [];
 
     // Fetch orders in batches of 10
-    for (let i = 0; i < 4 && pageNum < 30; i++) {
+    for (let i = 0; i < 4 && pageNum < 100; i++) {
       batchPromises.push(fetchPrintifyBatch(pageNum));
       pageNum += 1;
     }
