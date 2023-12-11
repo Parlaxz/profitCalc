@@ -17,6 +17,8 @@ export async function getPrintifyOrders(
   lastOrderNum: number,
   refresh: boolean = false
 ) {
+  console.time("getPrintify setup");
+
   const printifyEndpoint =
     "https://api.printify.com/v1/shops/2666622/orders.json";
   const printifyAccessToken = process.env.PRINTIFY_API_TOKEN;
@@ -55,6 +57,8 @@ export async function getPrintifyOrders(
 
   // Function to fetch a batch of orders
   const fetchPrintifyBatch = async (pageNumber: number) => {
+    console.time("getPrintify page " + pageNumber);
+
     console.log("Fetching Printify page " + pageNumber);
     const printifyData = await fetch(printifyEndpoint + "?page=" + pageNumber, {
       method: "GET",
@@ -65,9 +69,11 @@ export async function getPrintifyOrders(
       }
       return response.json();
     });
+    console.timeEnd("getPrintify page " + pageNumber);
 
     return printifyData.data;
   };
+  console.timeEnd("getPrintify setup");
 
   while (missingOrders.length > 0 && pageTolerance < 10 && pageNum < 30) {
     if (pageTolerance !== 0) {
@@ -77,7 +83,7 @@ export async function getPrintifyOrders(
     const batchPromises = [];
 
     // Fetch orders in batches of 10
-    for (let i = 0; i < 1 && pageNum < 30; i++) {
+    for (let i = 0; i < 4 && pageNum < 30; i++) {
       batchPromises.push(fetchPrintifyBatch(pageNum));
       pageNum += 1;
     }

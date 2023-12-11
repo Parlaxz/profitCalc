@@ -109,27 +109,35 @@ export function getNumItems(orders: ShopifyOrder[]) {
 
 export async function getShopifyOrders(startDate: string, endDate: string) {
   // Step 1: Get the latest order from the database (assuming you are using Prisma)
+  console.time("getLatestOrder");
   const latestOrder = await prisma.shopifyOrder.findFirst({
     orderBy: { orderNumber: "desc" },
   });
+  console.timeEnd("getLatestOrder");
 
   // Step 2: Get the date of the latest order
   const dateOfLatestOrder = latestOrder?.createdAt ?? "";
   // Step 3: Call updateShopifyOrders to update orders with today's date
+  console.time("update");
+
   await updateShopifyOrders(
     latestOrder?.orderNumber ? latestOrder?.orderNumber : 1000,
     dateOfLatestOrder,
     getCurrentDate()
   );
+  console.timeEnd("update");
 
   // Step 4: Get all orders from the database between startDate and endDate
-  console.log("startu datu", startDate, endDate);
+  console.time("getAllBW");
+
   const orders = await prisma.shopifyOrder.findMany({
     where: {
       AND: [{ createdAt: { gte: startDate } }, { createdAt: { lte: endDate } }],
     },
   });
   // Step 5: Return the orders
+  console.timeEnd("getAllBW");
+
   return orders;
 }
 
@@ -152,6 +160,8 @@ export async function updateShopifyOrders(
   let allShopifyOrders: ShopifyOrderData[] = [];
 
   while (hasNextPage) {
+    console.time("finishGQLShopifyQuery");
+
     const graphqlQuery = {
       query: `query ($cursor: String) {
           orders(first: ${ordersPerPage}, after: $cursor, query: "name:>${startOrderNumber}") {
@@ -206,6 +216,8 @@ export async function updateShopifyOrders(
       }
       return response.json();
     });
+    console.timeEnd("finishGQLShopifyQuery");
+
     console.log("shopifyData", shopifyData?.data?.orders?.edges[0]);
     const orders = shopifyData.data.orders.edges;
     hasNextPage = shopifyData.data.orders.pageInfo.hasNextPage;
@@ -252,18 +264,28 @@ export async function updateShopifyOrders(
 }
 
 export async function getDateRangeData(endDate: string, startDate: string) {
+  console.time("total");
+
   const extraCosts = 0;
+  console.time("datePreset");
+
   let datePreset = getDatePreset(startDate, endDate);
+  console.timeEnd("datePreset");
 
   const endDateAfter = addDaysToDate(endDate, 1);
 
   //Get Shopify Data
   console.log("Getting Shopify");
+  console.time("Get Shopify Data");
+
   const shopifyOrders = await getShopifyOrders(startDate, endDate);
   const shopifyRevenue = getShopifyRevenue(shopifyOrders);
+  console.timeEnd("Get Shopify Data");
 
   //Process Shopify Data
-  console.log("Processing");
+  console.log("Processing Shopify Data");
+  console.time("Processing Shopify Data");
+
   const numOrders = shopifyOrders.length;
   const firstOrderNum = shopifyOrders.sort((a, b) => {
     return a?.orderNumber - b?.orderNumber;
@@ -271,14 +293,22 @@ export async function getDateRangeData(endDate: string, startDate: string) {
 
   const lastOrderNum = shopifyOrders[shopifyOrders.length - 1]?.orderNumber;
   const shopifyGrossRevenue = getShopifyGrossRevenue(shopifyRevenue, numOrders);
+  console.timeEnd("Processing Shopify Data");
 
   //Get Printify Data
   console.log("Printify");
+  console.time("Printify");
   let printifyOrders = await getPrintifyOrders(firstOrderNum, lastOrderNum);
+
   let totalPrintifyCost = getPrintifyCost(printifyOrders);
 
+  console.timeEnd("Printify");
+
   //get Facebook Data
+
   console.log("FB");
+  console.time("FB");
+
   const campaignId = "120201248481810630";
   const adAccountId = "act_476856863674743";
   const fbAccessToken = process.env.FB_ACCESS_TOKEN;
@@ -288,8 +318,11 @@ export async function getDateRangeData(endDate: string, startDate: string) {
     startDate,
     endDate
   );
+  console.timeEnd("FB");
 
   //get Facebook Budget Data
+  console.time("Facebook Budget Data");
+
   metaAdsOverview = await Promise.all(
     metaAdsOverview.data.map(async (ad) => {
       const budget = await getAdBudget(ad.adset_id, fbAccessToken);
@@ -297,19 +330,25 @@ export async function getDateRangeData(endDate: string, startDate: string) {
       return ad;
     })
   );
+  console.timeEnd("Facebook Budget Data");
 
   //Process Facebook Data
+  console.time("Process Facebook Data");
+
   let metaAdsFinal = 0;
   let metaAdsCurrent = 0;
   metaAdsOverview.forEach((ad) => {
     metaAdsFinal += parseFloat(ad.budget);
     metaAdsCurrent += parseFloat(ad.spend);
   });
+  console.timeEnd("Process Facebook Data");
 
   //calculate total cashback
   let cashback = (totalPrintifyCost + metaAdsFinal) * 0.03;
 
   //zip Printify and Shopify Order Data together
+  console.time("zip");
+
   const ordersArray = [];
   console.log("firstOrderNum:", firstOrderNum, "numOrders:", numOrders);
   for (let i = firstOrderNum; i < firstOrderNum + numOrders; i++) {
@@ -334,6 +373,8 @@ export async function getDateRangeData(endDate: string, startDate: string) {
       ordersArray.push(order);
     }
   }
+  console.timeEnd("zip");
+
   const numItems = getNumItems(shopifyOrders);
   console.log("lastOrder", ordersArray[ordersArray.length - 1]);
   // printStats(
@@ -343,6 +384,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
   //   cashback,
   //   extraCosts
   // );
+  console.timeEnd("total");
 
   const dailyProfit = (
     shopifyGrossRevenue -

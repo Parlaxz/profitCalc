@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node";
+import { defer, json, redirect } from "@remix-run/node";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { addDaysToDate, getDateRangeData } from "~/apiHelpers";
@@ -41,7 +41,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const dateRangeData = await getDateRangeData(endDate, startDate);
 
   // Update the cookie with the determined start and end dates
-  return json(dateRangeData, {
+  return defer(dateRangeData, {
     headers: {
       "Set-Cookie": await dateRangeCookie.serialize(cookie),
     },
@@ -171,9 +171,9 @@ function DashboardPage(pageData) {
                   <ArrowTrendingUpIcon className="h-8 w-8 text-white" />
                 </div>
                 <div className=" font-bold text-4xl">
-                  ${pageData?.profit?.daily}
+                  ${pageData?.profit?.current}
                   <span className="text-blue-300 text-xl">
-                    / {pageData?.profit?.current}
+                    / {pageData?.profit?.daily}
                   </span>
                 </div>
                 <div className="text-neutral-100">Profit</div>
