@@ -22,26 +22,26 @@ export async function action({ request }: ActionFunctionArgs) {
   //     }
   //   ]
   // }
-  console.log("createdAt", payload?.createdAt);
+  console.log("createdAt", payload?.created_at);
+  console.log("lineItems", payload?.lineItems);
+
   const order = {
     revenue: parseFloat(payload?.netPaymentSet?.shopMoney?.amount),
-    customer: payload?.customer?.displayName
-      ? payload?.customer?.displayName
+    customer: payload?.customer?.display_name
+      ? payload?.customer?.display_name
       : "",
-    createdAt: getOrderDate(payload?.createdAt),
+    createdAt: getOrderDate(payload?.created_at),
     orderNumber: parseInt(payload?.name?.slice(1)),
     lineItems: payload?.lineItems?.map((lineItem) => {
       return {
-        title: lineItem?.node?.title,
-        quantity: lineItem?.node?.quantity,
-        price: lineItem?.node?.originalUnitPriceSet?.shopMoney?.amount,
+        title: lineItem?.title,
+        quantity: lineItem?.quantity,
+        price: lineItem?.originalUnitPriceSet?.shopMoney?.amount,
       };
     }),
   };
   console.log("order", order);
   console.log("customer");
   console.log("orderNumber");
-  console.log("lineItems");
-  console.log("createdAt");
   return { status: 200, body: "ok" };
 }
