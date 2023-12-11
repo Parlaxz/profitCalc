@@ -5,7 +5,6 @@ export const prisma = new PrismaClient();
 
 export async function action({ request }: ActionFunctionArgs) {
   const payload = await request.json();
-
   const order = {
     revenue: parseFloat(payload?.current_total_price),
     customer: `${payload?.customer?.first_name} ${payload?.customer?.last_name}`,
@@ -20,6 +19,8 @@ export async function action({ request }: ActionFunctionArgs) {
       };
     }),
   };
+  console.log("order", order);
+
   prisma.shopifyOrder.create({
     data: order,
   });
