@@ -19,7 +19,6 @@ export async function action({ request }: ActionFunctionArgs) {
       };
     }),
   };
-  console.log("order", order);
 
   const prismaOrder = await prisma.shopifyOrder.create({
     data: order,

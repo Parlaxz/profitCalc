@@ -109,20 +109,21 @@ export function getNumItems(orders: ShopifyOrder[]) {
 
 export async function getShopifyOrders(startDate: string, endDate: string) {
   // Step 1: Get the latest order from the database (assuming you are using Prisma)
-  console.time("getLatestOrder");
-  const latestOrder = await prisma.shopifyOrder.findFirst({
-    orderBy: { orderNumber: "desc" },
-  });
-  console.timeEnd("getLatestOrder");
+
+  // console.time("getLatestOrder");
+  // const latestOrder = await prisma.shopifyOrder.findFirst({
+  //   orderBy: { orderNumber: "desc" },
+  // });
+  // console.timeEnd("getLatestOrder");
 
   // Step 3: Call updateShopifyOrders to update orders with today's date
 
-  console.time("update");
+  // console.time("update");
 
-  await updateShopifyOrders(
-    latestOrder?.orderNumber ? latestOrder?.orderNumber : 1000
-  );
-  console.timeEnd("update");
+  // await updateShopifyOrders(
+  //   latestOrder?.orderNumber ? latestOrder?.orderNumber : 1000
+  // );
+  // console.timeEnd("update");
 
   // Step 4: Get all orders from the database between startDate and endDate
   console.time("getAllOrders");
