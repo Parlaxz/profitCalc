@@ -50,7 +50,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function getDefaultDateRange(datePreset: string) {
   const today = new Date();
-  today.setHours(today.getHours() - 6); // Adjust to GMT-6
+  today.setHours(today.getHours()); // Adjust to GMT-6
 
   const options = { timeZone: "America/Belize" };
   const formattedToday = today.toLocaleDateString("en-CA", options);
