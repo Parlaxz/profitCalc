@@ -21,8 +21,12 @@ export async function action({ request }: ActionFunctionArgs) {
   };
 
   try {
-    const prismaOrder = await prisma.shopifyOrder.create({
-      data: order,
+    const prismaOrder = await prisma.shopifyOrder.upsert({
+      where: {
+        ip: order.ip,
+      },
+      update: {},
+      create: order,
     });
   } catch (err) {
     console.log("shopify Order creation failed with error:", err);
