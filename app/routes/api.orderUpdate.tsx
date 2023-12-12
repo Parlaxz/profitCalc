@@ -28,6 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
       update: {},
       create: order,
     });
+    console.log("prismaOrder", prismaOrder);
   } catch (err) {
     console.log("shopify Order creation failed with error:", err);
   }
@@ -81,6 +82,5 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (err) {
     console.log("user creation / updating with order failed with err:", err);
   }
-  console.log("prismaOrder", prismaOrder);
   return { status: 200, body: order };
 }
