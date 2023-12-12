@@ -106,15 +106,19 @@ export function getNumItems(orders: ShopifyOrder[]) {
 }
 //----------------------------------------------------------------
 // API ORDER FETCHERS
+export const getLatestOrder = async () => {
+  const prisma = new PrismaClient();
 
+  const latestOrder = await prisma.shopifyOrder.findFirst({
+    orderBy: { orderNumber: "desc" },
+  });
+  console.log("latestOrder", latestOrder);
+  return latestOrder;
+};
 export async function getShopifyOrders(startDate: string, endDate: string) {
   // Step 1: Get the latest order from the database (assuming you are using Prisma)
 
-  // console.time("getLatestOrder");
-  // const latestOrder = await prisma.shopifyOrder.findFirst({
-  //   orderBy: { orderNumber: "desc" },
-  // });
-  // console.timeEnd("getLatestOrder");
+  // lastestOrder = getLatestOrder();
 
   // Step 3: Call updateShopifyOrders to update orders with today's date
 
@@ -225,6 +229,7 @@ export async function updateShopifyOrders(startOrderNumber: number) {
             ? order?.node?.customer?.displayName
             : "",
           createdAt: getOrderDate(order?.node?.createdAt),
+          ip: "",
           orderNumber: parseInt(order?.node?.name?.slice(1)),
           lineItems: order?.node?.lineItems?.edges?.map((lineItem) => {
             return {

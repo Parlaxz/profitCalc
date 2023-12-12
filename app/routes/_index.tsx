@@ -1,7 +1,16 @@
 import { defer, json, redirect } from "@remix-run/node";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import { addDaysToDate, getDateRangeData } from "~/apiHelpers";
+import {
+  addDaysToDate,
+  getDateRangeData,
+  getLatestOrder,
+  updateShopifyOrders,
+} from "~/apiHelpers";
 import {
   NewspaperIcon,
   ShoppingCartIcon,
@@ -154,7 +163,27 @@ function DashboardPage(pageData) {
           />
 
           <span className="w-px bg-neutral-300"></span>
-          <button className="text-white font-semibold text-base bg-gradient-to-tr from-cyan-500 to-blue-500 p-4 py-2 rounded-full">
+          <button
+            onClick={async () => {
+              try {
+                const response = await fetch("/api/manualOrderUpdate", {
+                  method: "GET",
+                  // You can add headers or other configurations as needed
+                });
+
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                // Handle the data as needed
+                console.log("Data:", data);
+              } catch (error) {
+                console.error("Error:", error.message);
+              }
+            }}
+            className="text-white font-semibold text-base bg-gradient-to-tr from-cyan-500 to-blue-500 p-4 py-2 rounded-full"
+          >
             Refresh All
           </button>
         </div>
