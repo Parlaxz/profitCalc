@@ -23,7 +23,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     const prismaOrder = await prisma.shopifyOrder.upsert({
       where: {
-        ip: order.ip,
+        orderNumber: order.orderNumber,
       },
       update: {},
       create: order,

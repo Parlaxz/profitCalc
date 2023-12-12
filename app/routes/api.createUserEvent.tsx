@@ -70,7 +70,14 @@ export async function action({ request }: ActionFunctionArgs) {
     update: {
       timeUpdated: new Date().toISOString(),
       events: arr,
-      UTM: getUser?.UTM?.valid ? getUser?.UTM : payload.utms,
+      UTM: getUser?.UTM?.valid
+        ? getUser?.UTM
+        : payload.utms ?? {
+            utmSource: "",
+            utmMedium: "",
+            utmCampaign: "",
+            valid: false,
+          },
     },
     create: {
       UTM: payload.utms,
