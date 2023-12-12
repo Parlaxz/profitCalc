@@ -26,8 +26,8 @@ model PrintifyOrder {
 
 model ShopifyOrder {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
-  ip          String @unique
-  orderNumber Int
+  ip          String
+  orderNumber Int    @unique
   revenue     Float
   customer    String
   createdAt   String
