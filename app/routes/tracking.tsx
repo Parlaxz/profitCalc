@@ -16,6 +16,7 @@ import {
   CheckCircleIcon,
   VideoCameraIcon,
   ForwardIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 // @ts-ignore
 const Picker = ReactDatePicker.default;
@@ -279,6 +280,7 @@ function LiveUser({ user }) {
 }
 
 const UTMTable = ({ data }) => {
+  const [skullEmoji, summonSkullEmoji] = useState(false);
   // Convert the data object to an array and sort it by purchase count
   const sortedData = Object.entries(data)
     .sort(([aKey, a], [bKey, b]) => {
@@ -323,6 +325,11 @@ const UTMTable = ({ data }) => {
   console.log("breakeven", breakeven);
   return (
     <div className="overflow-x-auto text-xs text-center">
+      {skullEmoji && (
+        <div className="my-4">
+          Ain't no way you thought that'd work💀 Wtf you tryna sort
+        </div>
+      )}
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
           <tr>
@@ -333,7 +340,18 @@ const UTMTable = ({ data }) => {
             <th className="py-2 px-4 border-b">Checkout Count</th>
             <th className="py-2 px-4 border-b">Checkout Value</th>
             <th className="py-2 px-4 border-b">Purchase Count</th>
-            <th className="py-2 px-4 border-b">Purchase Value</th>
+            <th className="py-2 px-4 border-b">
+              <div className="flex items-center">
+                <span>Purchase Value</span>{" "}
+                <button
+                  onClick={() => {
+                    summonSkullEmoji((prev) => !prev);
+                  }}
+                >
+                  <ChevronDownIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </th>
           </tr>
         </thead>
         <tbody>
