@@ -96,7 +96,48 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
                     <tr>
                       <td colSpan={7}>
                         <div className="p-4">
-                          {/* ... (existing content) */}
+                          <p>Order Date: {order.orderDate}</p>
+                          <p>Revenue: ${order.revenue}</p>
+                          <p>
+                            Product Cost: $
+                            {order.cost ? (order.cost / 100).toFixed(2) : ""}
+                          </p>
+                          <p>
+                            Shipping: $
+                            {order.shipping
+                              ? (order.shipping / 100).toFixed(2)
+                              : ""}
+                          </p>
+                          <p>
+                            Tax: $
+                            {order.tax ? (order.tax / 100).toFixed(2) : ""}
+                          </p>
+                          {order.shopifyLineItems?.map((lineItem) => {
+                            return (
+                              <div key={lineItem?.title} className="flex">
+                                {lineItem?.title}{" "}
+                                {[
+                                  "sweatshirt",
+                                  "t-shirt",
+                                  "hoodie",
+                                  "shirt",
+                                ].some((item) => {
+                                  if (
+                                    lineItem?.title
+                                      ?.toLowerCase()
+                                      .includes(item)
+                                  ) {
+                                    return true;
+                                  }
+                                  return false;
+                                }) ? (
+                                  ""
+                                ) : (
+                                  <ExclamationTriangleIcon className="h-4 w-4 text-yellow-400 ml-2" />
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       </td>
                     </tr>
