@@ -73,22 +73,23 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
                     <td className="py-2 px-4 border-b">
                       {order.printifyNumLineItems}
                     </td>
-                    <td className="py-2 px-4 border-b">${order.revenue}</td>
+                    <td className="py-2 px-4 border-b">
+                      ${Math.round(parseFloat(order.revenue))}
+                    </td>
                     <td className="py-2 px-4 border-b">
                       $
                       {order.cost
-                        ? (
-                            (order.cost + order.shipping + order.tax) /
-                            100
-                          ).toFixed(2)
+                        ? Math.round(
+                            (order.cost + order.shipping + order.tax) / 100
+                          ).toFixed(0)
                         : ""}
                     </td>
                     <td className="py-2 px-4 border-b">
                       $
-                      {(
+                      {Math.round(
                         order.revenue -
-                        (order.cost + order.shipping + order.tax) / 100
-                      ).toFixed(2)}
+                          (order.cost + order.shipping + order.tax) / 100
+                      ).toFixed(0)}
                     </td>
                   </tr>
                   {expandedRow === index && (
