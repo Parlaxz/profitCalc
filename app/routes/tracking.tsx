@@ -426,7 +426,8 @@ const UTMTable = ({ data }) => {
         </div>
         <div>
           - the daysSinceFirstRecordedEvent is Dec 11th, 2023, the day the UTM
-          leaderboard started tracking
+          leaderboard started tracking. It is a float, so after 2 and a half
+          days it is 2.5
         </div>
         <div>
           - (budget * (1 / 0.435)) is roughly 175, where .435 is Amr's profit
