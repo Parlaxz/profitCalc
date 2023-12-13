@@ -35,7 +35,7 @@ export const DatePicker = ({
 );
 export async function loader({ request }: LoaderFunctionArgs) {
   const currentDate = new Date();
-  const oneHourAgo = new Date(currentDate.getTime() - (60 * 60 * 1000 * 1) / 1); // Subtracting hour in milliseconds
+  const oneHourAgo = new Date(currentDate.getTime() - 60 * 60 * 1000 * 1 * 3); // Subtracting 3 hours  in milliseconds
 
   // const liveUsers = await prisma.user.findMany({
   //   orderBy: [
@@ -133,7 +133,9 @@ export default function Index() {
                   </div>
                   <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4">
                     Live View{" "}
-                    <span className="text-neutral-300 text-sm">(last 60m)</span>
+                    <span className="text-neutral-300 text-sm">
+                      (last 180m)
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col overflow-auto pr-4 h-fit max-h-full">
@@ -208,11 +210,13 @@ function LiveUser({ user }) {
             const secondsElapsed =
               (currentDate.getTime() - eventDate.getTime()) / 1000;
             let displayedTime = Math.floor(secondsElapsed) + "s";
-            if (secondsElapsed > 60) {
+            if (secondsElapsed > 3600) {
+              displayedTime = Math.floor(secondsElapsed / 3600) + "h";
+            } else if (secondsElapsed > 60) {
               displayedTime = Math.floor(secondsElapsed / 60) + "m";
             }
 
-            return secondsElapsed > 60 * 60 * 3 ? (
+            return secondsElapsed > 60 * 60 * 48 ? (
               <></>
             ) : (
               <div
@@ -281,11 +285,13 @@ const UTMTable = ({ data }) => {
       const aPurchase = a?.purchase ?? { count: 0, value: 0 };
       const bPurchase = b?.purchase ?? { count: 0, value: 0 };
 
-      if (bPurchase.count !== aPurchase.count) {
-        return bPurchase.count - aPurchase.count; // Sort by purchase count
-      } else {
-        return bPurchase.value - aPurchase.value; // Sort by purchase value if counts are equal
-      }
+      // if
+      // (bPurchase.count !== aPurchase.count) {
+      //   return bPurchase.count - aPurchase.count; // Sort by purchase count
+      // } else
+      // {
+      return bPurchase.value - aPurchase.value; // Sort by purchase value if counts are equal
+      // }
     })
     .map(([utmSource, events], index) => ({
       utmSource,
@@ -293,6 +299,28 @@ const UTMTable = ({ data }) => {
       index: index + 1,
     }));
 
+  // Calculate the number of days since the first event
+  // Calculate the number of days since 6 PM on December 11th, 2023
+  const targetDate = new Date("2023-12-11T18:00:00");
+  const currentDate = new Date();
+
+  const daysSinceTargetDate =
+    (currentDate - targetDate) / (1000 * 60 * 60 * 24);
+
+  // Calculate the number of non-linktree utms
+  const numAds = sortedData.filter((d) => d.utmSource !== "linktree").length;
+
+  // Budget and linktree purchase value
+  const budget = 75;
+  const linkTreeValue =
+    sortedData.find((d) => d.utmSource === "linktree")?.events?.purchase
+      ?.value ?? 0;
+
+  // Calculate breakeven
+  const breakeven =
+    daysSinceTargetDate * budget * (1 / 0.435) - linkTreeValue / numAds;
+
+  console.log("breakeven", breakeven);
   return (
     <div className="overflow-x-auto text-xs text-center">
       <table className="min-w-full bg-white border border-gray-300">
@@ -309,36 +337,90 @@ const UTMTable = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedData.map(({ utmSource, events, index }) => (
-            <tr key={utmSource}>
-              <td className="py-2 px-4 border-b">{index}</td>
-              <td className="py-2 px-4 border-b">{utmSource}</td>
-              <td className="py-2 px-4 border-b">
-                {events?.AddToCart?.count ?? 0}
-              </td>
-              <td className="py-2 px-4 border-b">
-                {events?.AddToCart?.value?.toFixed(2) ?? 0}
-              </td>
-              <td className="py-2 px-4 border-b">
-                {(events?.InitiateCheckout?.count ?? 0) +
-                  (events?.AcceleratedCheckout?.count ?? 0)}
-              </td>
-              <td className="py-2 px-4 border-b">
-                {(
-                  (events?.InitiateCheckout?.value ?? 0) +
-                  (events?.AcceleratedCheckout?.value ?? 0)
-                ).toFixed(2)}
-              </td>
-              <td className="py-2 px-4 border-b">
-                {events?.purchase?.count ?? 0}
-              </td>
-              <td className="py-2 px-4 border-b">
-                {events?.purchase?.value?.toFixed(2) ?? 0}
-              </td>
-            </tr>
-          ))}
+          {sortedData.map(({ utmSource, events, index }) => {
+            const isLinktree = utmSource === "linktree";
+            return (
+              <tr
+                key={utmSource}
+                className={
+                  events?.purchase?.value < breakeven * 0.8 && !isLinktree
+                    ? "bg-red-100"
+                    : events?.purchase?.value < breakeven && !isLinktree
+                    ? "bg-yellow-100"
+                    : !isLinktree
+                    ? "bg-green-100"
+                    : ""
+                }
+              >
+                {console.log("UTMSRC", utmSource)}
+                <td className="py-2 px-4 border-b">{index}</td>
+                <td className="py-2 px-4 border-b">{utmSource}</td>
+                <td className="py-2 px-4 border-b">
+                  {events?.AddToCart?.count ?? 0}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {events?.AddToCart?.value?.toFixed(2) ?? 0}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {(events?.InitiateCheckout?.count ?? 0) +
+                    (events?.AcceleratedCheckout?.count ?? 0)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {(
+                    (events?.InitiateCheckout?.value ?? 0) +
+                    (events?.AcceleratedCheckout?.value ?? 0)
+                  ).toFixed(2)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {events?.purchase?.count ?? 0}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {events?.purchase?.value?.toFixed(2) ?? 0}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+      <div className=" text-left mt-4">
+        <h3 className="text-lg font-semibold underline">Key</h3>
+        <div className="flex items-center">
+          <div className="bg-green-200 w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+          -<span className="mr-1">Over breakeven</span>
+          <span className="text-neutral-500">({">"}breakeven)</span>
+        </div>
+        <div className="flex items-center">
+          <div className="bg-yellow-200 w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+          -<span className="mr-1">Close to breakeven</span>
+          <span className="text-neutral-500">{"> "}(breakeven * .8)</span>
+        </div>
+        <div className="flex items-center">
+          <div className="bg-red-200 w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+          -<span className="mr-1">Far Below breakeven</span>
+          <span className="text-neutral-500">{"< "}(breakeven * .8)</span>
+        </div>
+      </div>
+      <div className=" text-left mt-2">
+        <h3 className="text-lg font-semibold underline">Notes</h3>
+        <div>
+          - Breakeven = daysSinceFirstRecordedEvent * budget * (1 / 0.435) -
+          linkTreeValue / numAds;
+        </div>
+        <div>
+          - the daysSinceFirstRecordedEvent is Dec 11th, 2023, the day the UTM
+          leaderboard started tracking
+        </div>
+        <div>
+          - (budget * (1 / 0.435)) is roughly 175, where .435 is Amr's profit
+          margin, meaning 175 is need a day for an ad to breakeven
+        </div>
+        <div>
+          - linkTreeValue / numAds is simply distributing the linktree revenue
+          to all the ads equally. This helps the lower performing ads since
+          realistically, they probably get less than their share of the linktree
+          sales, giving them more of a chance
+        </div>
+      </div>
     </div>
   );
 };
