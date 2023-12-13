@@ -31,7 +31,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
   }, []);
 
   return (
-    <div className="container mx-auto mt-8 overflow-scroll">
+    <div className="container mx-auto mt-8 overflow-scroll text-center">
       <button onClick={() => setFilterAliexpress(!filterAliexpress)}>
         Aliexpress
       </button>
