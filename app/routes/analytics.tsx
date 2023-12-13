@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { delay, getDateRangeData, prisma } from "~/apiHelpers";
 import {
   NewspaperIcon,
@@ -18,6 +18,7 @@ import { ResponsiveLine } from "@nivo/line";
 import "react-datepicker/dist/react-datepicker.css";
 
 import ReactDatePicker, { type ReactDatePickerProps } from "react-datepicker";
+import { Sidebar } from "./Sidebar";
 // @ts-ignore
 const Picker = ReactDatePicker.default;
 export const DatePicker = ({
@@ -123,7 +124,7 @@ export default function Index() {
   );
 
   const loaderData = useLoaderData<typeof loader>();
-  const [pageType, setPageType] = useState("dashboard");
+  const [pageType, setPageType] = useState("analytics");
   const [pageData, setPageData] = useState(loaderData);
   const [startDate, setStartDate] = useState(new Date("2023-11-01"));
   const [endDate, setEndDate] = useState(currentDate);
@@ -137,7 +138,7 @@ export default function Index() {
 
   return (
     <div className="max-h-screen h-screen bg-white flex justify-center items-center">
-      <Sidebar pageType={pageType} setPageType={setPageType} />
+      <Sidebar key={"pageType"} pageType={pageType} setPageType={setPageType} />
       <div></div>
       <div className="max-h-screen h-screen w-[87.5%] bg-white">
         <div className="flex items-center justify-between font-bold text-3xl p-8 pb-0">
@@ -240,35 +241,6 @@ const Card = ({ children = <></>, className = "" }) => {
     </div>
   );
 };
-export const Sidebar = (pageType, setPageType) => {
-  const handlePageChange = (newPageType) => {
-    setPageType(newPageType);
-  };
-  return (
-    <div className="md:flex hidden text-base items-center flex-col h-[98%] w-[12.5%] bg-neutral-950 ml-1 rounded-3xl text-white">
-      <div className="flex text-xl justify-center items-center w-full h-16 font-extrabold">
-        MOSHI
-      </div>
-      <Link
-        to="/"
-        className={`w-[90%] rounded-lg py-2 my-2 ${
-          pageType === "dashboard" ? "bg-neutral-800" : ""
-        }`}
-        onClick={() => handlePageChange("dashboard")}
-      >
-        Dashboard
-      </Link>
-      <Link
-        to="/analytics"
-        className={pageType === "analytics" ? "bg-blue-500" : ""}
-        onClick={() => handlePageChange("analytics")}
-      >
-        Analytics
-      </Link>
-    </div>
-  );
-};
-
 // DateButtons.jsx
 const transformDataForLineChart = (dailyAnalyticsData) => {
   console.log("dailyAnalyticsData", dailyAnalyticsData[0]);

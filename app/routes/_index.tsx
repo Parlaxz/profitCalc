@@ -23,7 +23,7 @@ import { OrderTable } from "../components/OrderTable";
 
 import { dateRangeCookie } from "~/cookies.server";
 import DateButton from "~/components/DateButton";
-import { Sidebar } from "./analytics";
+import { Sidebar } from "./Sidebar";
 
 // loader.ts
 
@@ -115,9 +115,7 @@ export default function Index() {
     <div className="max-h-screen h-screen bg-white flex justify-center items-center">
       <Sidebar pageType={pageType} setPageType={setPageType} />
 
-      {pageType === "dashboard" && pageData && DashboardPage(pageData)}
-
-      {pageType === "analytics" && pageData && AnalyticsPage(pageData)}
+      {DashboardPage(pageData)}
     </div>
   );
 }
