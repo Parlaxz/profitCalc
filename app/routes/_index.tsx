@@ -20,6 +20,7 @@ import {
 } from "@heroicons/react/24/solid";
 import React, { useState, useEffect } from "react";
 import { OrderTable } from "../components/OrderTable";
+import { Card } from "./tracking";
 
 import { dateRangeCookie } from "~/cookies.server";
 import DateButton from "~/components/DateButton";
@@ -112,7 +113,7 @@ export default function Index() {
   }, [loaderData]);
 
   return (
-    <div className="max-h-screen h-screen bg-white flex justify-center items-center">
+    <div className="max-h-screen h-screen  bg-white flex justify-center items-center">
       <Sidebar pageType={pageType} setPageType={setPageType} />
 
       {DashboardPage(pageData)}
@@ -120,47 +121,40 @@ export default function Index() {
   );
 }
 
-export const Card = ({ children = <></>, className = "" }) => {
-  return (
-    <div
-      className={
-        "w-full h-full border-neutral-200 border rounded-2xl px-12 py-4 grid grid-flow-row gap-2 shadow-sm " +
-        className
-      }
-    >
-      {children}
-    </div>
-  );
-};
 function DashboardPage(pageData) {
   console.log("datepresetttt", pageData?.datePreset);
   return (
-    <div className="max-h-screen h-screen w-[87.5%] bg-white overflow-scroll">
+    <div className="max-h-screen h-screen w-screen md:w-[87.5%] bg-white overflow-scroll">
       <div className="flex items-center justify-between font-bold text-3xl p-8 pb-0">
-        <div>Daily Dashboard</div>
+        <div className={"md:text-base text-sm"}>Daily Dashboard</div>
         <div className="grid grid-rows-1 grid-flow-col gap-2">
-          <DateButton
-            text="today"
-            datePreset="today"
-            selected={pageData?.datePreset === "today"}
-          />
-          <DateButton
-            text="yesterday"
-            datePreset="yesterday"
-            selected={pageData?.datePreset === "yesterday"}
-          />
-          <DateButton
-            text="Last 7 Days"
-            datePreset="last7d"
-            selected={pageData?.datePreset === "last7d"}
-          />
-          <DateButton
-            text="Last 30 Days"
-            datePreset="last30d"
-            selected={pageData?.datePreset === "last30d"}
-          />
+          <div className="grid md:grid-flow-col md:gap-2">
+            <DateButton
+              text="today"
+              datePreset="today"
+              selected={pageData?.datePreset === "today"}
+            />
+            <DateButton
+              text="yesterday"
+              datePreset="yesterday"
+              selected={pageData?.datePreset === "yesterday"}
+            />
+          </div>
+          <div className="hidden md:grid-flow-col md:gap-2">
+            {" "}
+            <DateButton
+              text="Last 7 Days"
+              datePreset="last7d"
+              selected={pageData?.datePreset === "last7d"}
+            />
+            <DateButton
+              text="Last 30 Days"
+              datePreset="last30d"
+              selected={pageData?.datePreset === "last30d"}
+            />
+          </div>
 
-          <span className="w-px bg-neutral-300"></span>
+          <span className="hidden md:block w-px bg-neutral-300"></span>
           <button
             onClick={async () => {
               try {
@@ -180,7 +174,7 @@ function DashboardPage(pageData) {
                 console.error("Error:", error.message);
               }
             }}
-            className="text-white font-semibold text-base bg-gradient-to-tr from-cyan-500 to-blue-500 p-4 py-2 rounded-full"
+            className="hidden md:block text-white font-semibold text-base bg-gradient-to-tr from-cyan-500 to-blue-500 p-4 py-2 rounded-full"
           >
             Refresh All
           </button>
@@ -197,7 +191,7 @@ function DashboardPage(pageData) {
                 <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-800 to-blue-800">
                   <ArrowTrendingUpIcon className="h-8 w-8 text-white" />
                 </div>
-                <div className=" font-bold text-4xl">
+                <div className=" font-bold text-4xl text-white">
                   ${pageData?.profit?.current}
                   <span className="text-blue-300 text-xl">
                     / {pageData?.profit?.daily}

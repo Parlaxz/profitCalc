@@ -4,6 +4,7 @@ import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { delay, getDateRangeData, prisma } from "~/apiHelpers";
+import { Card } from "./tracking";
 import {
   NewspaperIcon,
   ShoppingCartIcon,
@@ -80,7 +81,7 @@ const updateDailyAnalytics = async () => {
 
   // Step 3: For each day between dateLatestDaySaved and yesterday (GMT-6), run
   const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setDate(yesterday.getDate() - 2);
 
   let currentDate = new Date(dateLatestDaySaved);
   currentDate.setDate(currentDate.getDate() + 1); // Start from the day after dateLatestDaySaved
@@ -229,18 +230,6 @@ export default function Index() {
   );
 }
 
-const Card = ({ children = <></>, className = "" }) => {
-  return (
-    <div
-      className={
-        "w-full h-full border-neutral-200 border rounded-2xl px-12 py-4 grid grid-flow-row gap-2 shadow-sm " +
-        className
-      }
-    >
-      {children}
-    </div>
-  );
-};
 // DateButtons.jsx
 const transformDataForLineChart = (dailyAnalyticsData) => {
   console.log("dailyAnalyticsData", dailyAnalyticsData[0]);

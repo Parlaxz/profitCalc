@@ -15,6 +15,7 @@ import {
   ShoppingCartIcon,
   CheckCircleIcon,
   VideoCameraIcon,
+  ForwardIcon,
 } from "@heroicons/react/24/outline";
 // @ts-ignore
 const Picker = ReactDatePicker.default;
@@ -117,13 +118,13 @@ export default function Index() {
     <div className="max-h-screen h-screen bg-white flex justify-center items-center overflow-hidden">
       <Sidebar key={"pageType"} pageType={pageType} setPageType={setPageType} />
       <div></div>
-      <div className="max-h-screen h-screen w-[87.5%] bg-white">
-        <div className="flex items-center justify-between font-bold text-3xl p-8 pb-0">
+      <div className="max-h-screen h-screen md:w-[87.5%] bg-white">
+        <div className="flex items-center justify-between font-bold text-3xl p-2 md:p-8 pb-0">
           <div>Tracking Page</div>
         </div>
         {/* Main Body */}
-        <div className="grid gap-8 grid-rows-1 grid-cols-5 w-full h-full p-8">
-          <div className="col-span-2">
+        <div className="grid md:gap-8 grid-rows-2 md:grid-rows-1 grid-cols-1 md:grid-cols-5 w-full h-[200vh] md:h-full p-8">
+          <div className="md:col-span-2">
             <Card>
               <div className="max-h-full">
                 <div>
@@ -166,11 +167,11 @@ export default function Index() {
   );
 }
 
-const Card = ({ children = <></>, className = "" }) => {
+export const Card = ({ children = <></>, className = "" }) => {
   return (
     <div
       className={
-        "w-full h-full border-neutral-200 border rounded-2xl px-12 py-4 grid grid-flow-row gap-2 shadow-sm  max-h-[89vh] overflow-auto" +
+        "w-full h-full border-neutral-200 border md:text-base text-sm rounded-2xl px-4 md:px-12 py-2 md:py-4 grid grid-flow-row gap-2 shadow-sm  max-h-[89vh] overflow-auto" +
         className
       }
     >
@@ -219,7 +220,8 @@ function LiveUser({ user }) {
                 className={`flex flex-col px-2 justify-center items-center border-gray-200 border rounded-lg mx-1 ${
                   event?.type === "purchase"
                     ? "bg-green-800 text-white font-semibold"
-                    : event?.type === "InitiateCheckout"
+                    : event?.type === "InitiateCheckout" ||
+                      event?.type === "AcceleratedCheckout"
                     ? "bg-yellow-600 text-white font-semibold"
                     : ""
                 }  `}
@@ -234,7 +236,8 @@ function LiveUser({ user }) {
                 >
                   {event?.type === "AddToCart" ? (
                     <ShoppingCartIcon className="h-6 w-6" />
-                  ) : event?.type === "InitiateCheckout" ? (
+                  ) : event?.type === "InitiateCheckout" ||
+                    event?.type === "AcceleratedCheckout" ? (
                     <CheckCircleIcon className="h-6 w-6" />
                   ) : event?.type === "purchase" ? (
                     <BanknotesIcon className="h-6 w-6" />
