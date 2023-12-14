@@ -365,6 +365,10 @@ const UTMTable = ({ data }) => {
                     ? "bg-red-100"
                     : events?.purchase?.value < breakeven && !isLinktree
                     ? "bg-yellow-100"
+                    : !isLinktree &&
+                      events?.purchase?.value >
+                        breakeven + linkTreeValue / numAds
+                    ? "bg-blue-200"
                     : !isLinktree
                     ? "bg-green-100"
                     : ""
@@ -406,20 +410,32 @@ const UTMTable = ({ data }) => {
       </div>
       <div className=" text-left mt-1">
         <h3 className="text-lg font-semibold underline">Key</h3>
-        <div className="flex items-center">
-          <div className="bg-green-200 w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-          -<span className="mr-1">Over breakeven</span>
-          <span className="text-neutral-500">({">"}breakeven)</span>
-        </div>
-        <div className="flex items-center">
-          <div className="bg-yellow-200 w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-          -<span className="mr-1">Close to breakeven</span>
-          <span className="text-neutral-500">{"> "}(breakeven * .8)</span>
-        </div>
-        <div className="flex items-center">
-          <div className="bg-red-200 w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-          -<span className="mr-1">Far Below breakeven</span>
-          <span className="text-neutral-500">{"< "}(breakeven * .8)</span>
+        <div className="grid gap-1 grid-cols-2 grid-rows-2 grid-flow-col">
+          <div className="flex items-center">
+            <div className="bg-blue-300 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+            -
+            <span className="mr-1">
+              Over breakeven w/o help from linktree Ads
+            </span>
+            <span className="text-neutral-500">
+              ({">"}breakeven + linktree)
+            </span>
+          </div>
+          <div className="flex items-center">
+            <div className="bg-green-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+            -<span className="mr-1">Over breakeven</span>
+            <span className="text-neutral-500">({">"}breakeven)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="bg-yellow-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+            -<span className="mr-1">Close to breakeven</span>
+            <span className="text-neutral-500">{"> "}(breakeven * .8)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="bg-red-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+            -<span className="mr-1">Far Below breakeven</span>
+            <span className="text-neutral-500">{"< "}(breakeven * .8)</span>
+          </div>
         </div>
       </div>
       <div className=" text-left mt-2">
