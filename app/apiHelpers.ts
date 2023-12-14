@@ -451,7 +451,7 @@ export const getOrderDate = (rawDate) => {
   const orderDate = new Date(`${rawDate}`);
 
   // Set the time zone offset for GMT-6 (CST)
-  orderDate.setHours(orderDate.getHours());
+  orderDate.setHours(orderDate.getHours() - 6);
 
   // Get the formatted date string in "YYYY-MM-DD" format
   const gmtMinus6Date = orderDate.toISOString().split("T")[0];
