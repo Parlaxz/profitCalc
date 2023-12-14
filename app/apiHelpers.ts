@@ -450,6 +450,13 @@ function getCurrentDate() {
 export const getOrderDate = (rawDate) => {
   const orderDate = new Date(`${rawDate}`);
 
+  // Get the formatted date string in "YYYY-MM-DD" format
+  const gmtMinus6Date = orderDate.toISOString().split("T")[0];
+  return gmtMinus6Date;
+};
+export const getCSTOrderDate = (rawDate) => {
+  const orderDate = new Date(`${rawDate}`);
+
   // Set the time zone offset for GMT-6 (CST)
   orderDate.setHours(orderDate.getHours() - 6);
 
