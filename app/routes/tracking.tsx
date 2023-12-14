@@ -120,11 +120,11 @@ export default function Index() {
       <Sidebar key={"pageType"} pageType={pageType} setPageType={setPageType} />
       <div></div>
       <div className="max-h-screen h-screen md:w-[87.5%] bg-white">
-        <div className="flex items-center justify-between font-bold text-3xl p-2 md:p-8 pb-0">
+        <div className="flex items-center justify-between font-bold text-2xl p-2 md:p-8 pb-0 ">
           <div>Tracking Page</div>
         </div>
         {/* Main Body */}
-        <div className="grid md:gap-8 grid-rows-2 md:grid-rows-1 grid-cols-1 md:grid-cols-5 w-full h-[200vh] md:h-full p-8">
+        <div className="grid md:gap-8 grid-rows-2 md:grid-rows-1 grid-cols-1 md:grid-cols-5 w-full h-[200vh] md:h-full md:p-8 md:pt-0">
           <div className="md:col-span-2">
             <Card>
               <div className="max-h-full">
@@ -400,7 +400,8 @@ const UTMTable = ({ data }) => {
           })}
         </tbody>
       </table>
-      <div className=" text-left mt-4">
+      <div>Current Breakeven - {breakeven.toFixed(2)}</div>
+      <div className=" text-left mt-1">
         <h3 className="text-lg font-semibold underline">Key</h3>
         <div className="flex items-center">
           <div className="bg-green-200 w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
