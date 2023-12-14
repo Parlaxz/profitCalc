@@ -140,7 +140,7 @@ function DashboardPage(pageData) {
               selected={pageData?.datePreset === "yesterday"}
             />
           </div>
-          <div className="hidden md:grid-flow-col md:gap-2">
+          <div className="hidden md:grid md:grid-flow-col gap-2">
             {" "}
             <DateButton
               text="Last 7 Days"
