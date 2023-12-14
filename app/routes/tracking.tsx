@@ -400,7 +400,10 @@ const UTMTable = ({ data }) => {
           })}
         </tbody>
       </table>
-      <div>Current Breakeven - {breakeven.toFixed(2)}</div>
+      <div>
+        Current Breakeven - {breakeven.toFixed(2)} | Number of days -{" "}
+        {daysSinceTargetDate.toFixed(2)}
+      </div>
       <div className=" text-left mt-1">
         <h3 className="text-lg font-semibold underline">Key</h3>
         <div className="flex items-center">
@@ -421,7 +424,7 @@ const UTMTable = ({ data }) => {
       </div>
       <div className=" text-left mt-2">
         <h3 className="text-lg font-semibold underline">Notes</h3>
-        <div>
+        <div className=" font-semibold">
           - Breakeven = daysSinceFirstRecordedEvent * budget * (1 / 0.435) -
           linkTreeValue / numAds;
         </div>
