@@ -435,13 +435,17 @@ const UTMTable = ({ data }) => {
         </div>
         <div>
           - (budget * (1 / 0.435)) is roughly 175, where .435 is Amr's profit
-          margin, meaning 175 is need a day for an ad to breakeven
+          margin estimation, meaning 175 is needed a day for an ad to breakeven
         </div>
         <div>
           - linkTreeValue / numAds is simply distributing the linktree revenue
           to all the ads equally. This helps the lower performing ads since
           realistically, they probably get less than their share of the linktree
           sales, giving them more of a chance
+        </div>
+        <div className=" font-semibold">
+          - Assumptions (it breaks when any of this changes) = 1. budget for all
+          ads is 75 and 2.start dates of all ads are the same
         </div>
       </div>
     </div>
