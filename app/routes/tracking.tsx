@@ -352,6 +352,7 @@ const UTMTable = ({ data }) => {
                 </button>
               </div>
             </th>
+            <th className="py-2 px-4 border-b">Profit</th>
           </tr>
         </thead>
         <tbody>
@@ -375,29 +376,32 @@ const UTMTable = ({ data }) => {
                 }
               >
                 {console.log("UTMSRC", utmSource)}
-                <td className="py-2 px-4 border-b">{index}</td>
-                <td className="py-2 px-4 border-b">{utmSource}</td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-1 px-4 border-b">{index}</td>
+                <td className="py-1 px-4 border-b">{utmSource}</td>
+                <td className="py-1 px-4 border-b">
                   {events?.AddToCart?.count ?? 0}
                 </td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-1 px-4 border-b">
                   {events?.AddToCart?.value?.toFixed(2) ?? 0}
                 </td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-1 px-4 border-b">
                   {(events?.InitiateCheckout?.count ?? 0) +
                     (events?.AcceleratedCheckout?.count ?? 0)}
                 </td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-1 px-4 border-b">
                   {(
                     (events?.InitiateCheckout?.value ?? 0) +
                     (events?.AcceleratedCheckout?.value ?? 0)
                   ).toFixed(2)}
                 </td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-1 px-4 border-b">
                   {events?.purchase?.count ?? 0}
                 </td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-1 px-4 border-b">
                   {events?.purchase?.value?.toFixed(2) ?? 0}
+                </td>
+                <td className="py-1 px-4 border-b">
+                  {(events?.purchase?.value - breakeven)?.toFixed(2) ?? 0}
                 </td>
               </tr>
             );
@@ -443,6 +447,11 @@ const UTMTable = ({ data }) => {
         <div className=" font-semibold">
           - Breakeven = daysSinceFirstRecordedEvent * budget * (1 / 0.435) -
           linkTreeValue / numAds;
+        </div>
+        <div className=" font-semibold">
+          - Profit is generously calculated. It is total revenue - cost +
+          linktree/numAds, which means it's an estimate and more generous to the
+          lower ads
         </div>
         <div>
           - the daysSinceFirstRecordedEvent is Dec 11th, 2023, the day the UTM
