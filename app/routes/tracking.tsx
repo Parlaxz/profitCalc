@@ -303,7 +303,7 @@ const UTMTable = ({ data }) => {
 
   // Calculate the number of days since the first event
   // Calculate the number of days since 6 PM on December 11th, 2023
-  const targetDate = new Date("2023-12-11T18:00:00");
+  const targetDate = new Date("2023-12-11T23:00:00");
   const currentDate = new Date();
 
   const daysSinceTargetDate =
