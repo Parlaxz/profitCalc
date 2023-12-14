@@ -1,5 +1,6 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import React, { useState, useEffect } from "react";
+import { getShopifyGrossRevenue } from "~/apiHelpers";
 import type { OrderTableProps } from "~/typeDefinitions";
 
 // OrderTable.js
@@ -87,7 +88,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
                     <td className="py-2 px-4 border-b">
                       $
                       {Math.round(
-                        order.revenue -
+                        getShopifyGrossRevenue(order?.revenue, 1) -
                           (order.cost + order.shipping + order.tax) / 100
                       ).toFixed(0)}
                     </td>
