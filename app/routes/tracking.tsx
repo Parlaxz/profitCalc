@@ -464,8 +464,8 @@ const UTMTable = ({ data, dateRange }) => {
               events?.purchase?.value * 0.435 - budget * daysSinceTargetDate
                 ? events?.purchase?.value * 0.435 - budget * daysSinceTargetDate
                 : 0 - budget * daysSinceTargetDate;
-            let profitAll = profit + nonPaidValue / numAds;
-            let profitLinktree = profit + linkTreeValue / numAds;
+            let profitAll = profit + (nonPaidValue * 0.435) / numAds;
+            let profitLinktree = profit + (linkTreeValue * 0.435) / numAds;
             // if (!isAd) {
             //   profit = 0;
             // }
@@ -477,9 +477,9 @@ const UTMTable = ({ data, dateRange }) => {
                     ? "bg-blue-200"
                     : isAd && profitLinktree > 0
                     ? "bg-green-100"
-                    : isAd &&
-                      Math.abs(profit) < 0.8 * budget * daysSinceTargetDate
-                    ? "bg-yellow-100"
+                    : isAd && profitAll > 0
+                    ? // Math.abs(profit) < 0.8 * budget * daysSinceTargetDate
+                      "bg-yellow-100"
                     : isAd
                     ? "bg-red-100"
                     : ""
@@ -562,8 +562,8 @@ function UTMKey() {
         </div>
         <div className="flex items-center">
           <div className="bg-yellow-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-          -<span className="mr-1">Close to breakeven with profitLinktree</span>
-          <span className="text-neutral-500">{"> "}(within 20% of it)</span>
+          -<span className="mr-1">Breakeven with profit All</span>
+          {/* <span className="text-neutral-500">{"> "}(within 20% of it)</span> */}
         </div>
         <div className="flex items-center">
           <div className="bg-red-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
@@ -579,8 +579,8 @@ function UTMNotes() {
   return (
     <div className=" text-left mt-2">
       <div className=" font-semibold">
-        - Breakeven = daysSinceFirstRecordedEvent * budget * (1 / 0.435) -
-        linkTreeValue / numAds;
+        I need to update these notes they're mostly wrong with the latest
+        balance patchs
       </div>
       <div className=" font-semibold">
         - Profit is generously calculated. It is total revenue - cost +
