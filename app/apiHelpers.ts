@@ -12,6 +12,7 @@ import {
 } from "prisma/shopifyOrderFunctions";
 import { getPrintifyOrders } from "./routes/api.getPrintifyOrders";
 import { getAdBudget, getFacebookAds } from "./routes/api.getFacebookAds";
+import { parse } from "date-fns";
 
 export const prisma = new PrismaClient();
 
@@ -329,6 +330,25 @@ export async function getDateRangeData(endDate: string, startDate: string) {
       return ad;
     })
   );
+
+  const costPerClick =
+    metaAdsOverview.reduce((acc, ad) => {
+      return (
+        acc +
+        parseFloat(
+          ad?.cost_per_inline_link_click
+            ? ad?.cost_per_inline_link_click
+            : ad?.spend
+        )
+      );
+    }, 0) / metaAdsOverview.length;
+
+  const cpm =
+    metaAdsOverview.reduce((acc, ad) => {
+      return acc + parseFloat(ad?.cpm ? ad?.cpm : ad?.spend);
+    }, 0) / metaAdsOverview.length;
+
+  console.log("costPerClick", costPerClick);
   console.timeEnd("Facebook Budget Data");
 
   //Process Facebook Data
@@ -405,6 +425,8 @@ export async function getDateRangeData(endDate: string, startDate: string) {
     meta: {
       dailyBudget: metaAdsFinal,
       currentSpend: metaAdsCurrent,
+      costPerClick,
+      cpm,
     },
     shopify: { revenue: shopifyRevenue, grossRevenue: shopifyGrossRevenue },
     printify: { cost: totalPrintifyCost },
