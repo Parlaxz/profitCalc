@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import { json } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
@@ -17,6 +17,8 @@ import {
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import TableCell from "./TableCell";
+import type { User } from "~/data/typeDefinitions";
+
 // @ts-ignore
 const Picker = ReactDatePicker.default;
 export const DatePicker = ({
@@ -65,10 +67,98 @@ export const meta = () => {
     { name: "description", content: "Welcome to Remix!" },
   ];
 };
-
 // ./app/routes/index.tsx
 export default function Index() {
   let revalidator = useRevalidator();
+
+  const loaderData = useLoaderData<typeof loader>();
+  const [pageType, setPageType] = useState("tracking");
+  const purchasers = loaderData?.allUsers?.filter((user) =>
+    user.events.some((event) => event.type === "purchase")
+  );
+  console.log("purchasers", purchasers);
+  const utmData = {};
+  const [filter, setFilter] = useState("all");
+
+  // Add these functions to handle button clicks
+  const handleTodayClick = () => {
+    setFilter("today");
+  };
+
+  const handleYesterdayClick = () => {
+    setFilter("yesterday");
+  };
+
+  const handleAllTimeClick = () => {
+    setFilter("all");
+  };
+
+  // Filter the data based on the selected filter
+  console.log("loaderData?.allUsers", loaderData?.allUsers);
+
+  // ...
+
+  const filteredData = useMemo(() => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 1
+    );
+
+    if (filter === "today") {
+      return loaderData?.allUsers?.map((user: User) =>
+        new Date(user.timeCreated) >= today
+          ? user
+          : {
+              events: [],
+              UTM: {
+                utmSource: user.UTM?.utmSource,
+                utmMedium: user.UTM?.utmMedium,
+              },
+            }
+      );
+    } else if (filter === "yesterday") {
+      return loaderData?.allUsers?.filter(
+        (user: User) =>
+          new Date(user.timeCreated) >= yesterday &&
+          new Date(user.timeCreated) < today
+      );
+    } else {
+      return loaderData?.allUsers;
+    }
+  }, [filter, loaderData]);
+
+  // Iterate over each user in the filteredData array
+  filteredData?.forEach((user) => {
+    // Get the UTM source from the user object, default to "No Source" if it doesn't exist
+    const utmSource = user.UTM?.utmSource || "No Source";
+
+    // If there's no entry for this UTM source in utmData, initialize one
+    if (!utmData[utmSource]) {
+      utmData[utmSource] = {};
+    }
+
+    // Iterate over each event in the user's events array
+    user.events.forEach((event) => {
+      // Get the event type from the event object
+      const eventType = event.type;
+
+      // If there's no entry for this event type under the current UTM source in utmData, initialize one
+      if (!utmData[utmSource][eventType]) {
+        utmData[utmSource][eventType] = { count: 0, value: 0 };
+      }
+
+      // Increment the count for this event type under the current UTM source in utmData
+      utmData[utmSource][eventType].count++;
+
+      // Add the value of the current event (converted to a float) to the value for this event type under the current UTM source in utmData
+      // If the value of the current event is not a number, default to 0
+      utmData[utmSource][eventType].value += parseFloat(event.value) ?? 0;
+    });
+  });
+
   useEffect(() => {
     // Define the revalidation function
     const revalidate = () => {
@@ -82,33 +172,7 @@ export default function Index() {
     // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, []); // Empty dependency array to ensure the effect runs only once on mount
-
-  const loaderData = useLoaderData<typeof loader>();
-  const [pageType, setPageType] = useState("tracking");
-  const purchasers = loaderData?.allUsers?.filter((user) =>
-    user.events.some((event) => event.type === "purchase")
-  );
-  console.log("purchasers", purchasers);
-  const utmData = {};
-
-  loaderData?.allUsers?.forEach((user) => {
-    const utmSource = user.UTM?.utmSource || "No Source";
-
-    if (!utmData[utmSource]) {
-      utmData[utmSource] = {};
-    }
-
-    user.events.forEach((event) => {
-      const eventType = event.type;
-
-      if (!utmData[utmSource][eventType]) {
-        utmData[utmSource][eventType] = { count: 0, value: 0 };
-      }
-
-      utmData[utmSource][eventType].count++;
-      utmData[utmSource][eventType].value += parseFloat(event.value) ?? 0;
-    });
-  });
+  // Add this at the top of your component
 
   console.log("utmData", utmData);
 
@@ -151,12 +215,38 @@ export default function Index() {
                   <div className="w-fit h-fit p-2 bg-neutral-100 rounded-full">
                     <AtSymbolIcon className="h-8 w-8 " />
                   </div>
-                  <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4">
-                    UTM High Stakes Leaderboards
+                  <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4 flex justify-between items-center">
+                    <span>UTM High Stakes Leaderboards</span>
+                    <div className="text-base font-bold">
+                      <button
+                        className={`p-2 mx-1 border border-neutral-400 rounded-lg ${
+                          filter === "today" ? "bg-gray-500 text-white" : ""
+                        }`}
+                        onClick={handleTodayClick}
+                      >
+                        Today
+                      </button>
+                      <button
+                        className={`p-2 mx-1 border border-neutral-400 rounded-lg ${
+                          filter === "yesterday" ? "bg-gray-500 text-white" : ""
+                        }`}
+                        onClick={handleYesterdayClick}
+                      >
+                        Yesterday
+                      </button>
+                      <button
+                        className={`p-2 mx-1 border border-neutral-400 rounded-lg ${
+                          filter === "all" ? "bg-gray-500 text-white" : ""
+                        }`}
+                        onClick={handleAllTimeClick}
+                      >
+                        All Time
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <UTMTable data={utmData} />
+                  <UTMTable data={utmData} dateRange={filter} />
                 </div>
               </div>
             </Card>
@@ -276,21 +366,26 @@ function LiveUser({ user }) {
   );
 }
 
-const UTMTable = ({ data }) => {
+const UTMTable = ({ data, dateRange }) => {
   const [skullEmoji, summonSkullEmoji] = useState(false);
+  const [utmInfoView, setUtmInfoView] = useState<String>("key");
+
   // Convert the data object to an array and sort it by purchase count
   const sortedData = Object.entries(data)
     .sort(([aKey, a], [bKey, b]) => {
-      const aPurchase = a?.purchase ?? { count: 0, value: 0 };
-      const bPurchase = b?.purchase ?? { count: 0, value: 0 };
+      if (aKey === "linktree" || aKey === "No Source") return 1;
+      if (bKey === "linktree" || bKey === "No Source") return -1;
 
-      // if
-      // (bPurchase.count !== aPurchase.count) {
-      //   return bPurchase.count - aPurchase.count; // Sort by purchase count
-      // } else
-      // {
+      const aPurchase: { count: number; value: number } = a?.purchase ?? {
+        count: 0,
+        value: 0,
+      };
+      const bPurchase: { count: number; value: number } = b?.purchase ?? {
+        count: 0,
+        value: 0,
+      };
+
       return bPurchase.value - aPurchase.value; // Sort by purchase value if counts are equal
-      // }
     })
     .map(([utmSource, events], index) => ({
       utmSource,
@@ -300,25 +395,32 @@ const UTMTable = ({ data }) => {
 
   // Calculate the number of days since the first event
   // Calculate the number of days since 6 PM on December 11th, 2023
-  const targetDate = new Date("2023-12-11T23:00:00");
-  const currentDate = new Date();
+  const targetDate: Date = new Date("2023-12-11T23:00:00");
+  const currentDate: Date = new Date();
 
-  const daysSinceTargetDate =
-    (currentDate - targetDate) / (1000 * 60 * 60 * 24);
+  let daysSinceTargetDate: number =
+    (currentDate.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24);
+  if (dateRange === "today") {
+    daysSinceTargetDate = daysSinceTargetDate - Math.floor(daysSinceTargetDate);
+  } else if (dateRange === "yesterday") {
+    daysSinceTargetDate = 1;
+  }
 
-  // Calculate the number of non-linktree utms
-  const numAds = sortedData.filter((d) => d.utmSource !== "linktree").length;
+  // Calculate the number of non-linktree or No Source utms
+  const numAds: number = sortedData.filter(
+    (d) => d.utmSource !== "linktree" && d.utmSource !== "No Source"
+  ).length;
 
   // Budget and linktree purchase value
-  const budget = 75;
-  const linkTreeValue =
+  const budget: number = 75; //TODO: make this dynamic
+  const linkTreeValue: number =
     sortedData.find((d) => d.utmSource === "linktree")?.events?.purchase
       ?.value ?? 0;
+  const noSourceValue: number =
+    sortedData.find((d) => d.utmSource === "No Source")?.events?.purchase
+      ?.value ?? 0;
+  const nonPaidValue: number = linkTreeValue + noSourceValue;
 
-  // Calculate breakeven
-  const breakeven =
-    daysSinceTargetDate * budget * (1 / 0.435) - linkTreeValue / numAds;
-  console.log("breakeven", breakeven);
   return (
     <div className="overflow-x-auto text-xs text-center">
       {skullEmoji && (
@@ -329,7 +431,7 @@ const UTMTable = ({ data }) => {
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">Number</th>
+            {/* <th className="py-2 px-4 border-b">Number</th> */}
             <th className="py-2 px-4 border-b">UTM Source</th>
             <th className="py-2 px-4 border-b">Add To Cart Count</th>
             <th className="py-2 px-4 border-b">Add To Cart Value</th>
@@ -349,30 +451,41 @@ const UTMTable = ({ data }) => {
               </div>
             </th>
             <th className="py-2 px-4 border-b">Profit</th>
+            <th className="py-2 px-4 border-b">Profit LinkTree</th>
+            <th className="py-2 px-4 border-b">Profit All</th>
           </tr>
         </thead>
         <tbody>
           {sortedData.map(({ utmSource, events, index }) => {
-            const isNotAd =
-              utmSource === "linktree" || utmSource === "No Source";
+            const isAd = !(
+              utmSource === "linktree" || utmSource === "No Source"
+            );
+            let profit =
+              events?.purchase?.value * 0.435 - budget * daysSinceTargetDate
+                ? events?.purchase?.value * 0.435 - budget * daysSinceTargetDate
+                : 0 - budget * daysSinceTargetDate;
+            let profitAll = profit + nonPaidValue / numAds;
+            let profitLinktree = profit + linkTreeValue / numAds;
+            // if (!isAd) {
+            //   profit = 0;
+            // }
             return (
               <tr
                 key={utmSource}
                 className={
-                  events?.purchase?.value < breakeven * 0.8 && !isNotAd
-                    ? "bg-red-100"
-                    : events?.purchase?.value < breakeven && !isNotAd
-                    ? "bg-yellow-100"
-                    : !isNotAd &&
-                      events?.purchase?.value >
-                        breakeven + linkTreeValue / numAds
+                  isAd && profit > 0
                     ? "bg-blue-200"
-                    : !isNotAd
+                    : isAd && profitLinktree > 0
                     ? "bg-green-100"
+                    : isAd &&
+                      Math.abs(profit) < 0.8 * budget * daysSinceTargetDate
+                    ? "bg-yellow-100"
+                    : isAd
+                    ? "bg-red-100"
                     : ""
                 }
               >
-                <td className="py-1 px-4 border-b">{index}</td>
+                {/* <td className="py-1 px-4 border-b">{index}</td> */}
                 <td className="py-1 px-4 border-b">{utmSource}</td>
                 <TableCell value={events?.AddToCart?.count} fixed={0} />
                 <TableCell value={events?.AddToCart?.value} />
@@ -391,98 +504,108 @@ const UTMTable = ({ data }) => {
                 />
                 <TableCell value={events?.purchase?.count} fixed={0} />
                 <TableCell value={events?.purchase?.value} />
-                <TableCell value={events?.purchase?.value - breakeven} />
+                <TableCell value={profit} />
+                <TableCell value={isAd ? profitLinktree : 0} />
+                <TableCell value={isAd ? profitAll : 0} />
               </tr>
             );
           })}
         </tbody>
       </table>
       <div>
-        Current Breakeven - {breakeven.toFixed(2)} | Number of days -{" "}
+        {/* Current Breakeven - {breakeven.toFixed(2)} | Number of days -{" "} */}
         {daysSinceTargetDate.toFixed(2)}
       </div>
-      <div className=" text-left mt-1">
-        <h3 className="text-lg font-semibold underline">Key</h3>
-        <div className="grid gap-1 grid-cols-2 grid-rows-2 grid-flow-col">
-          <div className="flex items-center">
-            <div className="bg-blue-300 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-            -
-            <span className="mr-1">
-              Over breakeven w/o help from linktree Ads
-            </span>
-            <span className="text-neutral-500">
-              ({">"}breakeven + linktree)
-            </span>
-          </div>
-          <div className="flex items-center">
-            <div className="bg-green-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-            -<span className="mr-1">Over breakeven</span>
-            <span className="text-neutral-500">({">"}breakeven)</span>
-          </div>
-          <div className="flex items-center">
-            <div className="bg-yellow-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-            -<span className="mr-1">Close to breakeven</span>
-            <span className="text-neutral-500">{"> "}(breakeven * .8)</span>
-          </div>
-          <div className="flex items-center">
-            <div className="bg-red-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
-            -<span className="mr-1">Far Below breakeven</span>
-            <span className="text-neutral-500">{"< "}(breakeven * .8)</span>
-          </div>
-        </div>
+      <div className="text-left flex">
+        <button
+          onClick={() => {
+            setUtmInfoView("key");
+          }}
+          className={`p-2 mr-2 rounded-md border border-neutral-400 ${
+            utmInfoView === "key" ? "bg-gray-500 text-white" : ""
+          }`}
+        >
+          Key
+        </button>
+        <button
+          onClick={() => {
+            setUtmInfoView("notes");
+          }}
+          className={`p-2 rounded-md border border-neutral-400 ${
+            utmInfoView === "notes" ? "bg-gray-500 text-white" : ""
+          }`}
+        >
+          Notes
+        </button>
       </div>
-      <div className=" text-left mt-2">
-        <h3 className="text-lg font-semibold underline">Notes</h3>
-        <div className=" font-semibold">
-          - Breakeven = daysSinceFirstRecordedEvent * budget * (1 / 0.435) -
-          linkTreeValue / numAds;
+      {utmInfoView === "key" ? <UTMKey /> : <UTMNotes />}
+    </div>
+  );
+};
+
+function UTMKey() {
+  return (
+    <div className=" text-left mt-1">
+      <div className="grid gap-1 grid-cols-2 grid-rows-2 grid-flow-col">
+        <div className="flex items-center">
+          <div className="bg-blue-300 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+          -
+          <span className="mr-1">
+            Gigachad Over breakeven w/o help from linktree Ads
+          </span>
+          <span className="text-neutral-500">({">"}breakeven + linktree)</span>
         </div>
-        <div className=" font-semibold">
-          - Profit is generously calculated. It is total revenue - cost +
-          linktree/numAds, which means it's an estimate and more generous to the
-          lower ads
+        <div className="flex items-center">
+          <div className="bg-green-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+          -<span className="mr-1">Breakeven with linktree</span>
+          {/* <span className="text-neutral-500">({">"}breakeven)</span> */}
         </div>
-        <div>
-          - the daysSinceFirstRecordedEvent is Dec 11th, 2023, the day the UTM
-          leaderboard started tracking. It is a float, so after 2 and a half
-          days it is 2.5
+        <div className="flex items-center">
+          <div className="bg-yellow-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+          -<span className="mr-1">Close to breakeven with profitLinktree</span>
+          <span className="text-neutral-500">{"> "}(within 20% of it)</span>
         </div>
-        <div>
-          - (budget * (1 / 0.435)) is roughly 175, where .435 is Amr's profit
-          margin estimation, meaning 175 is needed a day for an ad to breakeven
-        </div>
-        <div>
-          - linkTreeValue / numAds is simply distributing the linktree revenue
-          to all the ads equally. This helps the lower performing ads since
-          realistically, they probably get less than their share of the linktree
-          sales, giving them more of a chance
-        </div>
-        <div className=" font-semibold">
-          - Assumptions (it breaks when any of this changes) = 1. budget for all
-          ads is 75 and 2.start dates of all ads are the same
+        <div className="flex items-center">
+          <div className="bg-red-200 rounded-md w-4 h-4 p-3 border-neutral-400 border mr-2"></div>
+          -<span className="mr-1">Are you even trying?</span>
+          {/* <span className="text-neutral-500">{"< "}(breakeven * .8)</span> */}
         </div>
       </div>
     </div>
   );
-};
-interface EventDetail {
-  count?: number;
-  value?: number;
 }
 
-interface Events {
-  AddToCart?: EventDetail;
-  InitiateCheckout?: EventDetail;
-  AcceleratedCheckout?: EventDetail;
-  purchase?: EventDetail;
-}
-
-interface User {
-  ip: string;
-  timeUpdated: string;
-  UTM?: {
-    utmSource: string;
-    utmMedium: string;
-  };
-  events: Events[];
+function UTMNotes() {
+  return (
+    <div className=" text-left mt-2">
+      <div className=" font-semibold">
+        - Breakeven = daysSinceFirstRecordedEvent * budget * (1 / 0.435) -
+        linkTreeValue / numAds;
+      </div>
+      <div className=" font-semibold">
+        - Profit is generously calculated. It is total revenue - cost +
+        linktree/numAds, which means it's an estimate and more generous to the
+        lower ads
+      </div>
+      <div>
+        - the daysSinceFirstRecordedEvent is Dec 11th, 2023, the day the UTM
+        leaderboard started tracking. It is a float, so after 2 and a half days
+        it is 2.5
+      </div>
+      <div>
+        - (budget * (1 / 0.435)) is roughly 175, where .435 is Amr's profit
+        margin estimation, meaning 175 is needed a day for an ad to breakeven
+      </div>
+      <div>
+        - linkTreeValue / numAds is simply distributing the linktree revenue to
+        all the ads equally. This helps the lower performing ads since
+        realistically, they probably get less than their share of the linktree
+        sales, giving them more of a chance
+      </div>
+      <div className=" font-semibold">
+        - Assumptions (it breaks when any of this changes) = 1. budget for all
+        ads is 75 and 2.start dates of all ads are the same
+      </div>
+    </div>
+  );
 }
