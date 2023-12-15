@@ -5,9 +5,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, useRevalidator } from "@remix-run/react";
 import { prisma } from "~/apiHelpers";
 import { AtSymbolIcon } from "@heroicons/react/24/solid";
-
 import "react-datepicker/dist/react-datepicker.css";
-
 import ReactDatePicker, { type ReactDatePickerProps } from "react-datepicker";
 import { Sidebar } from "./Sidebar";
 import {
@@ -18,6 +16,7 @@ import {
   ForwardIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+import TableCell from "./TableCell";
 // @ts-ignore
 const Picker = ReactDatePicker.default;
 export const DatePicker = ({
@@ -93,24 +92,22 @@ export default function Index() {
   const utmData = {};
 
   loaderData?.allUsers?.forEach((user) => {
-    const utmSource = user.UTM?.utmSource;
+    const utmSource = user.UTM?.utmSource || "No Source";
 
-    if (utmSource) {
-      if (!utmData[utmSource]) {
-        utmData[utmSource] = {};
+    if (!utmData[utmSource]) {
+      utmData[utmSource] = {};
+    }
+
+    user.events.forEach((event) => {
+      const eventType = event.type;
+
+      if (!utmData[utmSource][eventType]) {
+        utmData[utmSource][eventType] = { count: 0, value: 0 };
       }
 
-      user.events.forEach((event) => {
-        const eventType = event.type;
-
-        if (!utmData[utmSource][eventType]) {
-          utmData[utmSource][eventType] = { count: 0, value: 0 };
-        }
-
-        utmData[utmSource][eventType].count++;
-        utmData[utmSource][eventType].value += parseFloat(event.value) ?? 0;
-      });
-    }
+      utmData[utmSource][eventType].count++;
+      utmData[utmSource][eventType].value += parseFloat(event.value) ?? 0;
+    });
   });
 
   console.log("utmData", utmData);
@@ -321,7 +318,6 @@ const UTMTable = ({ data }) => {
   // Calculate breakeven
   const breakeven =
     daysSinceTargetDate * budget * (1 / 0.435) - linkTreeValue / numAds;
-
   console.log("breakeven", breakeven);
   return (
     <div className="overflow-x-auto text-xs text-center">
@@ -357,52 +353,45 @@ const UTMTable = ({ data }) => {
         </thead>
         <tbody>
           {sortedData.map(({ utmSource, events, index }) => {
-            const isLinktree = utmSource === "linktree";
+            const isNotAd =
+              utmSource === "linktree" || utmSource === "No Source";
             return (
               <tr
                 key={utmSource}
                 className={
-                  events?.purchase?.value < breakeven * 0.8 && !isLinktree
+                  events?.purchase?.value < breakeven * 0.8 && !isNotAd
                     ? "bg-red-100"
-                    : events?.purchase?.value < breakeven && !isLinktree
+                    : events?.purchase?.value < breakeven && !isNotAd
                     ? "bg-yellow-100"
-                    : !isLinktree &&
+                    : !isNotAd &&
                       events?.purchase?.value >
                         breakeven + linkTreeValue / numAds
                     ? "bg-blue-200"
-                    : !isLinktree
+                    : !isNotAd
                     ? "bg-green-100"
                     : ""
                 }
               >
-                {console.log("UTMSRC", utmSource)}
                 <td className="py-1 px-4 border-b">{index}</td>
                 <td className="py-1 px-4 border-b">{utmSource}</td>
-                <td className="py-1 px-4 border-b">
-                  {events?.AddToCart?.count ?? 0}
-                </td>
-                <td className="py-1 px-4 border-b">
-                  {events?.AddToCart?.value?.toFixed(2) ?? 0}
-                </td>
-                <td className="py-1 px-4 border-b">
-                  {(events?.InitiateCheckout?.count ?? 0) +
-                    (events?.AcceleratedCheckout?.count ?? 0)}
-                </td>
-                <td className="py-1 px-4 border-b">
-                  {(
+                <TableCell value={events?.AddToCart?.count} fixed={0} />
+                <TableCell value={events?.AddToCart?.value} />
+                <TableCell
+                  value={
+                    (events?.InitiateCheckout?.count ?? 0) +
+                    (events?.AcceleratedCheckout?.count ?? 0)
+                  }
+                  fixed={0}
+                />
+                <TableCell
+                  value={
                     (events?.InitiateCheckout?.value ?? 0) +
                     (events?.AcceleratedCheckout?.value ?? 0)
-                  ).toFixed(2)}
-                </td>
-                <td className="py-1 px-4 border-b">
-                  {events?.purchase?.count ?? 0}
-                </td>
-                <td className="py-1 px-4 border-b">
-                  {events?.purchase?.value?.toFixed(2) ?? 0}
-                </td>
-                <td className="py-1 px-4 border-b">
-                  {(events?.purchase?.value - breakeven)?.toFixed(2) ?? 0}
-                </td>
+                  }
+                />
+                <TableCell value={events?.purchase?.count} fixed={0} />
+                <TableCell value={events?.purchase?.value} />
+                <TableCell value={events?.purchase?.value - breakeven} />
               </tr>
             );
           })}
@@ -476,3 +465,24 @@ const UTMTable = ({ data }) => {
     </div>
   );
 };
+interface EventDetail {
+  count?: number;
+  value?: number;
+}
+
+interface Events {
+  AddToCart?: EventDetail;
+  InitiateCheckout?: EventDetail;
+  AcceleratedCheckout?: EventDetail;
+  purchase?: EventDetail;
+}
+
+interface User {
+  ip: string;
+  timeUpdated: string;
+  UTM?: {
+    utmSource: string;
+    utmMedium: string;
+  };
+  events: Events[];
+}
