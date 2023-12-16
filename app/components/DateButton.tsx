@@ -18,7 +18,7 @@ export default function DateButton({ text, datePreset, selected }) {
     <button
       className={
         selected
-          ? "text-white font-semibold  bg-gradient-to-tr from-cyan-500 to-blue-500 border-2 p-4 py-2 rounded-full text-xs md:text-base"
+          ? "text-white font-semibold  bg-gradient-to-tr from-cyan-500 to-blue-500 border-2 dark:border-blue-700 p-4 py-2 rounded-full text-xs md:text-base"
           : "text-blue-500 font-semibold border-blue-500 border-2 p-4 py-2 rounded-full text-xs md:text-base"
       }
       onClick={handleClick}

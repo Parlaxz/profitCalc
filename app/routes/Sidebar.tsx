@@ -20,7 +20,7 @@ export const Sidebar = ({ pageType, setPageType }) => {
       <div
         className={`md:flex ${
           displaySidebar ? "flex fixed top-1 left-1 bottom-1 right-4" : "hidden"
-        }  md:w-[12.5%] text-base items-center flex-col md:h-[98%]  bg-gray-950 md:ml-1 rounded-3xl text-white`}
+        }  md:w-[12.5%] text-base items-center flex-col md:h-[98%]  bg-gray-950 dark:bg-gray-800 md:ml-1 rounded-3xl text-white`}
       >
         <button
           onClick={() => {
@@ -36,7 +36,7 @@ export const Sidebar = ({ pageType, setPageType }) => {
         <Link
           to="/"
           className={`${
-            pageType === "dashboard" ? "bg-gray-800" : ""
+            pageType === "dashboard" ? "bg-gray-800 dark:bg-gray-900" : ""
           } py-3 px-12 rounded-2xl`}
           onClick={() => handlePageChange("dashboard")}
         >
@@ -45,7 +45,7 @@ export const Sidebar = ({ pageType, setPageType }) => {
         <Link
           to="/analytics"
           className={`${
-            pageType === "analytics" ? "bg-gray-800" : ""
+            pageType === "analytics" ? "bg-gray-800 dark:bg-gray-900" : ""
           } py-3 px-12 rounded-2xl`}
           onClick={() => handlePageChange("analytics")}
         >
@@ -54,7 +54,7 @@ export const Sidebar = ({ pageType, setPageType }) => {
         <Link
           to="/tracking"
           className={`${
-            pageType === "tracking" ? "bg-gray-800" : ""
+            pageType === "tracking" ? "bg-gray-800 dark:bg-gray-900" : ""
           } py-3 px-12 rounded-2xl`}
           onClick={() => handlePageChange("tracking")}
         >

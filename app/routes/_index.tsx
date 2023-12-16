@@ -113,7 +113,7 @@ export default function Index() {
   }, [loaderData]);
 
   return (
-    <div className="max-h-screen h-screen  bg-white flex justify-center items-center">
+    <div className="max-h-screen h-screen  bg-white dark:bg-gray-950 flex justify-center items-center">
       <Sidebar pageType={pageType} setPageType={setPageType} />
 
       {DashboardPage(pageData)}
@@ -124,7 +124,7 @@ export default function Index() {
 function DashboardPage(pageData) {
   console.log("datepresetttt", pageData?.datePreset);
   return (
-    <div className="max-h-screen h-screen w-screen md:w-[87.5%] bg-white overflow-scroll">
+    <div className="max-h-screen dark:bg-gray-950 h-screen w-screen md:w-[87.5%] bg-white overflow-scroll">
       <div className="flex items-center justify-between font-bold text-3xl p-8 pb-0">
         <div className={"md:text-base text-sm"}>Daily Dashboard</div>
         <div className="grid grid-rows-1 grid-flow-col gap-2">
@@ -154,7 +154,7 @@ function DashboardPage(pageData) {
             />
           </div>
 
-          <span className="hidden md:block w-px bg-neutral-300"></span>
+          <span className="hidden md:block w-px dark:bg-neutral-600 bg-neutral-300"></span>
           <button
             onClick={async () => {
               try {
@@ -174,7 +174,7 @@ function DashboardPage(pageData) {
                 console.error("Error:", error.message);
               }
             }}
-            className="hidden md:block text-white font-semibold text-base bg-gradient-to-tr from-cyan-500 to-blue-500 p-4 py-2 rounded-full"
+            className="hidden md:block dark:text-black text-white font-semibold text-base bg-gradient-to-tr dark:from-cyan-600 dark:to-blue-600 from-cyan-500 to-blue-500 p-4 py-2 rounded-full"
           >
             Refresh All
           </button>
@@ -186,54 +186,60 @@ function DashboardPage(pageData) {
         <div className="grid  md:grid-rows-2 grid-cols-1 gap-8">
           {" "}
           <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 w-full h-full ">
-            <Card className="text-white bg-gradient-to-tr from-cyan-500 to-blue-500 h-48">
+            <Card className="dark:text-black text-white bg-gradient-to-tr dark:from-cyan-600 dark:to-blue-600 from-cyan-500 to-blue-500 h-48">
               <>
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-800 to-blue-800">
-                  <ArrowTrendingUpIcon className="h-8 w-8 text-white" />
+                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr dark:from-cyan-500 dark:to-blue-500 from-cyan-800 to-blue-800">
+                  <ArrowTrendingUpIcon className="h-8 w-8 dark:text-black text-white" />
                 </div>
-                <div className=" font-bold text-4xl text-white">
+                <div className=" font-bold text-4xl  text-white">
                   ${pageData?.profit?.current}
-                  <span className="text-blue-300 text-xl">
+                  <span className="text-blue-300 dark:text-blue-200 text-xl">
                     / {pageData?.profit?.daily}
                   </span>
                 </div>
-                <div className="text-neutral-100">Profit</div>
+                <div className="text-neutral-100 dark:text-neutral-900">
+                  Profit
+                </div>
               </>
             </Card>
             <Card>
               <>
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
-                  <NewspaperIcon className="h-8 w-8 text-white" />
+                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500 dark:from-cyan-600 dark:to-blue-600">
+                  <NewspaperIcon className="h-8 w-8 text-white dark:text-gray-950" />
                 </div>
-                <div className=" font-bold text-4xl">
+                <div className=" font-bold text-4xl dark:text-white">
                   ${pageData?.meta?.currentSpend.toFixed(2)}
                   <span className="text-neutral-300 text-xl">
                     / {pageData?.meta?.dailyBudget.toFixed(2)}
                   </span>
                 </div>
-                <div className="text-neutral-400">Facebook Spend</div>
+                <div className="text-neutral-400 dark:text-neutral-600">
+                  Facebook Spend
+                </div>
               </>
             </Card>
             <Card>
               <>
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
-                  <ShoppingBagIcon className="h-8 w-8 text-white" />
+                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500 dark:from-cyan-600 dark:to-blue-600">
+                  <ShoppingBagIcon className="h-8 w-8 text-white dark:text-gray-950" />
                 </div>
-                <div className=" font-bold text-4xl">
+                <div className=" font-bold text-4xl dark:text-white">
                   ${pageData?.shopify?.grossRevenue?.toFixed(2)}
                   <span className="text-neutral-300 text-xl">
                     / {pageData?.shopify?.revenue?.toFixed(2)}
                   </span>
                 </div>
-                <div className="text-neutral-400">Shopify Revenue</div>
+                <div className="text-neutral-400dark:text-neutral-600">
+                  Shopify Revenue
+                </div>
               </>
             </Card>
             <Card>
               <>
-                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500">
-                  <PrinterIcon className="h-8 w-8 text-white" />
+                <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500 dark:from-cyan-600 dark:to-blue-600">
+                  <PrinterIcon className="h-8 w-8 text-white dark:text-gray-950" />
                 </div>
-                <div className=" font-bold text-4xl">
+                <div className=" font-bold text-4xl dark:text-white">
                   ${pageData?.printify?.cost?.toFixed(2)}
                 </div>
                 <div className="text-neutral-400">Printify Cost</div>
@@ -243,19 +249,19 @@ function DashboardPage(pageData) {
           <div className="grid grid-flow-col grid-cols-2 gap-4">
             <Card>
               <div>
-                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                <div className=" flex justify-between dark:bg-blue-700 bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Cashback:</span>
                   <span>${pageData?.stats?.cashback?.toFixed(2)}</span>
                 </div>
-                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                <div className=" flex justify-between dark:bg-blue-700 bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Total Items:</span>
                   <span>{pageData?.stats?.numItems}</span>
                 </div>
-                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                <div className=" flex justify-between dark:bg-blue-700 bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Total Orders:</span>
                   <span>{pageData?.stats?.numOrders}</span>
                 </div>
-                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                <div className=" flex justify-between dark:bg-blue-700 bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Daily CPC:</span>
                   <span>
                     $
@@ -264,7 +270,7 @@ function DashboardPage(pageData) {
                     ).toFixed(2)}
                   </span>
                 </div>
-                <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
+                <div className=" flex justify-between dark:bg-blue-700 bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>CPM</span>
                   <span>${pageData?.meta?.cpm.toFixed(2)}</span>
                 </div>
@@ -276,10 +282,10 @@ function DashboardPage(pageData) {
         <Card>
           <div className="flex flex-col h-max-full overflow-hidden">
             <div>
-              <div className="w-fit h-fit p-2 bg-neutral-100 rounded-full">
+              <div className="w-fit h-fit p-2 bg-neutral-100 dark:bg-neutral-800 dark:text-white rounded-full">
                 <ShoppingCartIcon className="h-8 w-8 " />
               </div>
-              <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4">
+              <div className="text-neutral-800 dark:text-neutral-400 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4">
                 Orders
               </div>
             </div>

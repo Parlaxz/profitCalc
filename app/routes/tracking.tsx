@@ -177,10 +177,10 @@ export default function Index() {
   console.log("utmData", utmData);
 
   return (
-    <div className="max-h-screen h-screen bg-white flex justify-center items-center overflow-hidden">
+    <div className="max-h-screen h-screen bg-white flex justify-center items-center overflow-hidden dark:bg-gray-950 dark:text-white">
       <Sidebar key={"pageType"} pageType={pageType} setPageType={setPageType} />
       <div></div>
-      <div className="max-h-screen h-screen md:w-[87.5%] bg-white">
+      <div className="max-h-screen h-screen md:w-[87.5%] bg-white dark:bg-gray-950 dark:text-white">
         <div className="flex items-center justify-between font-bold text-2xl p-2 md:p-8 pb-0 ">
           <div>Tracking Page</div>
         </div>
@@ -190,10 +190,10 @@ export default function Index() {
             <Card>
               <div className="max-h-full">
                 <div>
-                  <div className="w-fit h-fit p-2 bg-neutral-100 rounded-full">
+                  <div className="w-fit h-fit p-2 bg-neutral-100 dark:bg-neutral-900 rounded-full">
                     <VideoCameraIcon className="h-8 w-8 " />
                   </div>
-                  <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4">
+                  <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4 dark:text-white">
                     Live View{" "}
                     <span className="text-neutral-300 text-sm">
                       (last 180m)
@@ -212,14 +212,16 @@ export default function Index() {
             <Card>
               <div className="flex flex-col h-max-full overflow-hidden">
                 <div>
-                  <div className="w-fit h-fit p-2 bg-neutral-100 rounded-full">
+                  <div className="w-fit h-fit p-2 bg-neutral-100 dark:bg-neutral-900 rounded-full">
                     <AtSymbolIcon className="h-8 w-8 " />
                   </div>
                   <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4 flex justify-between items-center">
-                    <span>UTM High Stakes Leaderboards</span>
+                    <span className="dark:text-white">
+                      UTM High Stakes Leaderboards
+                    </span>
                     <div className="text-base font-bold">
                       <button
-                        className={`p-2 mx-1 border border-neutral-400 rounded-lg ${
+                        className={`p-2 mx-1 border border-neutral-400 dark:text-white rounded-lg ${
                           filter === "today" ? "bg-gray-500 text-white" : ""
                         }`}
                         onClick={handleTodayClick}
@@ -227,7 +229,7 @@ export default function Index() {
                         Today
                       </button>
                       <button
-                        className={`p-2 mx-1 border border-neutral-400 rounded-lg ${
+                        className={`p-2 mx-1 border dark:text-white border-neutral-400 rounded-lg ${
                           filter === "yesterday" ? "bg-gray-500 text-white" : ""
                         }`}
                         onClick={handleYesterdayClick}
@@ -235,7 +237,7 @@ export default function Index() {
                         Yesterday
                       </button>
                       <button
-                        className={`p-2 mx-1 border border-neutral-400 rounded-lg ${
+                        className={`p-2 mx-1 border dark:text-white border-neutral-400 rounded-lg ${
                           filter === "all" ? "bg-gray-500 text-white" : ""
                         }`}
                         onClick={handleAllTimeClick}
@@ -261,7 +263,7 @@ export const Card = ({ children = <></>, className = "" }) => {
   return (
     <div
       className={
-        "w-full h-full border-neutral-200 border md:text-base text-sm rounded-2xl px-4 md:px-12 py-2 md:py-4 grid grid-flow-row gap-2 shadow-sm  max-h-[89vh] overflow-auto" +
+        "w-full h-full border-neutral-200 dark:border-neutral-700 border md:text-base text-sm rounded-2xl px-4 md:px-12 py-2 md:py-4 grid grid-flow-row gap-2 shadow-sm  max-h-[89vh] overflow-auto" +
         className
       }
     >
@@ -280,8 +282,8 @@ function LiveUser({ user }) {
       <div
         className={`${
           secondsElapsed > 60 * 10
-            ? "border-neutral-200 border"
-            : "border-neutral-400 border"
+            ? "border-neutral-200 border dark:border-neutral-700"
+            : "border-neutral-400 border dark:border-neutral-500"
         }  p-4 rounded-md h-fit my-2 block overflow-hidden`}
       >
         <div className="flex items-center justify-between">
@@ -422,13 +424,13 @@ const UTMTable = ({ data, dateRange }) => {
   const nonPaidValue: number = linkTreeValue + noSourceValue;
 
   return (
-    <div className="overflow-x-auto text-xs text-center">
+    <div className="overflow-x-auto text-xs text-center ">
       {skullEmoji && (
         <div className="my-4">
           Ain't no way you thought that'd work💀 Wtf you tryna sort
         </div>
       )}
-      <table className="min-w-full bg-white border border-gray-300">
+      <table className="min-w-full bg-white border border-gray-300 dark:text-neutral-950">
         <thead>
           <tr>
             {/* <th className="py-2 px-4 border-b">Number</th> */}
