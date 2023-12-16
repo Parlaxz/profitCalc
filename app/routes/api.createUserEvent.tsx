@@ -48,7 +48,18 @@ export async function action({ request }: ActionFunctionArgs) {
   // TODO: If the payload event is InitiateCheckout or Accelerated Checkout, console.log the total amount, lines, the user id, and if the utm is valid
   const getUser = await prisma.user.findFirst({
     where: {
-      ip: payload.ip,
+      OR: [
+        {
+          ip: payload.ip,
+        },
+        {
+          events: {
+            some: {
+              cartId: payload.cartId,
+            },
+          },
+        },
+      ],
     },
   });
   let arr = [
