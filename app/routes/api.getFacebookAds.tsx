@@ -24,7 +24,7 @@ export async function getFacebookAds(
   endDate: string
 ) {
   const fields =
-    "adset_name,adset_id,impressions,clicks,cost_per_inline_link_click,conversions,cpm,reach,inline_link_click_ctr,spend";
+    "adset_name,adset_id,impressions,clicks,cost_per_inline_link_click,conversions,cpm,reach,inline_link_click_ctr,spend,inline_link_clicks";
   const apiUrl = `https://graph.facebook.com/v18.0/${campaignId}/insights?fields=${fields}&level=adset&time_range={'since':'${startDate}','until':'${endDate}'}`;
   console.log(apiUrl);
   try {

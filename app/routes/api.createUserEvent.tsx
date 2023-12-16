@@ -80,7 +80,12 @@ export async function action({ request }: ActionFunctionArgs) {
           },
     },
     create: {
-      UTM: payload.utms,
+      UTM: payload.utms ?? {
+        utmSource: "",
+        utmMedium: "",
+        utmCampaign: "",
+        valid: false,
+      },
       timeCreated: new Date().toISOString(),
       timeUpdated: new Date().toISOString(),
       ip: payload.ip,

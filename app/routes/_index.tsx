@@ -257,7 +257,12 @@ function DashboardPage(pageData) {
                 </div>
                 <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>Daily CPC:</span>
-                  <span>${pageData?.meta?.costPerClick.toFixed(2)}</span>
+                  <span>
+                    $
+                    {(
+                      pageData?.meta?.currentSpend / pageData?.meta?.numClicks
+                    ).toFixed(2)}
+                  </span>
                 </div>
                 <div className=" flex justify-between bg-blue-400 text-white rounded-3xl h-10 w-full mt-4 items-center font-bold px-4">
                   <span>CPM</span>

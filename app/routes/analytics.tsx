@@ -241,12 +241,187 @@ const transformDataForLineChart = (dailyAnalyticsData) => {
       "Ad Spend": analytics.data.meta.currentSpend,
       Revenue: analytics.data.shopify.grossRevenue,
       Cost: analytics.data.printify.cost,
+      CPC: Number.isNaN(
+        analytics?.data?.meta?.currentSpend / analytics?.data?.meta?.numClicks
+      )
+        ? 0
+        : analytics?.data?.meta?.currentSpend /
+          analytics?.data?.meta?.numClicks,
     };
   });
 };
 
 const MyResponsiveLine = ({ dailyAnalytics }) => {
-  console.log("dailyAnalytics", dailyAnalytics.length);
+  const transformedData = transformDataForLineChart(dailyAnalytics);
+  console.log("transformedData", transformedData);
+
+  const [showProfit, setShowProfit] = useState(true);
+  const [showRevenue, setShowRevenue] = useState(true);
+  const [showCost, setShowCost] = useState(true);
+  const [showCPC, setShowCPC] = useState(true);
+
+  const data = [];
+
+  if (showProfit) {
+    const profitData = transformedData.map((point) => ({
+      x: point.x,
+      y: point.Profit,
+    }));
+    data.push({
+      id: "Profit",
+      color: "hsl(120, 70%, 50%)",
+      data: profitData,
+    });
+  }
+  if (showCost) {
+    const costData = transformedData.map((point) => ({
+      x: point.x,
+      y: point.Cost,
+    }));
+    data.push({
+      id: "Cost",
+      color: "hsl(0, 70%, 50%)",
+      data: costData,
+    });
+  }
+  if (showRevenue) {
+    const revenueData = transformedData.map((point) => ({
+      x: point.x,
+      y: point.Revenue,
+    }));
+    data.push({
+      id: "Revenue",
+      color: "hsl(60, 70%, 50%)",
+      data: revenueData,
+    });
+  }
+  if (showCPC) {
+    const cpcData = transformedData.map((point) => ({
+      x: point.x,
+      y: point.CPC,
+    }));
+    data.push({
+      id: "CPC",
+      color: "hsl(60, 70%, 50%)",
+      data: cpcData,
+    });
+  }
+  return (
+    <>
+      <div className="flex justify-end">
+        <button
+          className={`${
+            showProfit ? "bg-green-800" : "bg-gray-500"
+          } hover:bg-green-600 text-white font-bold py-2 px-4 rounded`}
+          onClick={() => {
+            setShowProfit(!showProfit);
+          }}
+        >
+          Toggle Profit
+        </button>
+        <button
+          className={`${
+            showRevenue ? "bg-blue-800" : "bg-gray-500"
+          } hover:bg-blue-600 text-white font-bold py-2 px-4 mx-2  rounded`}
+          onClick={() => {
+            setShowRevenue(!showRevenue);
+          }}
+        >
+          Toggle Revenue
+        </button>
+        <button
+          className={`${
+            showCost ? "bg-red-800" : "bg-gray-500"
+          } hover:bg-red-600 text-white font-bold py-2 px-4 rounded`}
+          onClick={() => {
+            setShowCost(!showCost);
+          }}
+        >
+          Toggle Cost
+        </button>
+        <button
+          className={`${
+            showCPC ? "bg-yellow-600" : "bg-gray-500"
+          } hover:bg-yellow-400 text-white font-bold py-2 px-4 rounded`}
+          onClick={() => {
+            setShowCPC(!showCPC);
+          }}
+        >
+          Toggle CPC
+        </button>
+      </div>
+      {/* Rest of the code */}
+
+      <ResponsiveLine
+        data={data}
+        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        xScale={{ type: "point" }}
+        yScale={{
+          type: "linear",
+          min: "auto",
+          max: "auto",
+          stacked: true,
+          reverse: false,
+        }}
+        yFormat=" >-.2f"
+        curve="natural"
+        axisTop={null}
+        axisRight={null}
+        axisBottom={{
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: "Date",
+          legendOffset: 36,
+          legendPosition: "middle",
+        }}
+        axisLeft={{
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: "amount($)",
+          legendOffset: -40,
+          legendPosition: "middle",
+        }}
+        enableGridX={false}
+        pointSize={3}
+        pointColor={{ theme: "background" }}
+        pointBorderWidth={2}
+        pointBorderColor={{ from: "serieColor" }}
+        pointLabelYOffset={-12}
+        useMesh={true}
+        legends={[
+          {
+            anchor: "bottom-right",
+            direction: "column",
+            justify: false,
+            translateX: 100,
+            translateY: 0,
+            itemsSpacing: 0,
+            itemDirection: "left-to-right",
+            itemWidth: 80,
+            itemHeight: 20,
+            itemOpacity: 0.75,
+            symbolSize: 12,
+            symbolShape: "circle",
+            symbolBorderColor: "rgba(0, 0, 0, .5)",
+            effects: [
+              {
+                on: "hover",
+                style: {
+                  itemBackground: "rgba(0, 0, 0, .03)",
+                  itemOpacity: 1,
+                },
+              },
+            ],
+          },
+        ]}
+        // ... other props remain unchanged
+      />
+    </>
+  );
+};
+const CPCLine = ({ cpcData }) => {
   const transformedData = transformDataForLineChart(dailyAnalytics);
   const [showProfit, setShowProfit] = useState(true);
   const [showRevenue, setShowRevenue] = useState(true);

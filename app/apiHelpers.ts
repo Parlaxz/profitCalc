@@ -331,24 +331,14 @@ export async function getDateRangeData(endDate: string, startDate: string) {
     })
   );
 
-  const costPerClick =
-    metaAdsOverview.reduce((acc, ad) => {
-      return (
-        acc +
-        parseFloat(
-          ad?.cost_per_inline_link_click
-            ? ad?.cost_per_inline_link_click
-            : ad?.spend
-        )
-      );
-    }, 0) / metaAdsOverview.length;
-
+  const numClicks = metaAdsOverview.reduce((acc, ad) => {
+    return acc + parseFloat(ad?.inline_link_clicks ?? 0);
+  }, 0);
   const cpm =
     metaAdsOverview.reduce((acc, ad) => {
-      return acc + parseFloat(ad?.cpm ? ad?.cpm : ad?.spend);
+      return acc + parseFloat(ad?.cpm ?? 0);
     }, 0) / metaAdsOverview.length;
 
-  console.log("costPerClick", costPerClick);
   console.timeEnd("Facebook Budget Data");
 
   //Process Facebook Data
@@ -425,7 +415,7 @@ export async function getDateRangeData(endDate: string, startDate: string) {
     meta: {
       dailyBudget: metaAdsFinal,
       currentSpend: metaAdsCurrent,
-      costPerClick,
+      numClicks,
       cpm,
     },
     shopify: { revenue: shopifyRevenue, grossRevenue: shopifyGrossRevenue },
