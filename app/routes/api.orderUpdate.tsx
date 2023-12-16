@@ -5,6 +5,9 @@ export const prisma = new PrismaClient();
 
 export async function action({ request }: ActionFunctionArgs) {
   const payload = await request.json();
+  console.log("payload", payload);
+  console.log("payload?.checkout_id", payload?.checkout_id);
+  console.log("payload?.checkout_token", payload?.checkout_token);
   const order = {
     revenue: parseFloat(payload?.current_total_price),
     customer: `${payload?.customer?.first_name} ${payload?.customer?.last_name}`,
