@@ -57,6 +57,7 @@ export async function action({ request }: ActionFunctionArgs) {
       timeCreated: new Date().toISOString(),
       lines: payload.items,
       value: payload.value,
+      cartId: payload.cartId,
     },
   ];
   if (getUser) {
@@ -95,6 +96,7 @@ export async function action({ request }: ActionFunctionArgs) {
           timeCreated: new Date().toISOString(),
           lines: payload.items,
           value: payload.value,
+          cartId: payload.cartId,
         },
       ],
     },

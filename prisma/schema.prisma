@@ -28,6 +28,7 @@ model ShopifyOrder {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   ip          String
   orderNumber Int    @unique
+  cartId      String
   revenue     Float
   customer    String
   createdAt   String
