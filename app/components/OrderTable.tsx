@@ -32,11 +32,11 @@ export const OrderTable: React.FC<OrderTableProps> = ({ orders }) => {
   }, []);
 
   return (
-    <div className="container mx-auto mt-8 overflow-scroll text-center dark:text-white">
+    <div className="container mx-auto mt-8 overflow-scroll text-center dark:text-neutral-200">
       <button onClick={() => setFilterAliexpress(!filterAliexpress)}>
         Aliexpress
       </button>
-      <table className="min-w-full bg-white dark:bg-gray-950 dark:text-white">
+      <table className="min-w-full bg-white dark:bg-gray-950 dark:text-neutral-200">
         <thead>
           <tr>
             <th className="py-2 px-4 border-b">Order #</th>

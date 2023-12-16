@@ -207,7 +207,7 @@ function DashboardPage(pageData) {
                 <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500 dark:from-cyan-600 dark:to-blue-600">
                   <NewspaperIcon className="h-8 w-8 text-white dark:text-gray-950" />
                 </div>
-                <div className=" font-bold text-4xl dark:text-white">
+                <div className=" font-bold text-4xl dark:text-neutral-200">
                   ${pageData?.meta?.currentSpend.toFixed(2)}
                   <span className="text-neutral-300 text-xl">
                     / {pageData?.meta?.dailyBudget.toFixed(2)}
@@ -223,7 +223,7 @@ function DashboardPage(pageData) {
                 <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500 dark:from-cyan-600 dark:to-blue-600">
                   <ShoppingBagIcon className="h-8 w-8 text-white dark:text-gray-950" />
                 </div>
-                <div className=" font-bold text-4xl dark:text-white">
+                <div className=" font-bold text-4xl dark:text-neutral-200">
                   ${pageData?.shopify?.grossRevenue?.toFixed(2)}
                   <span className="text-neutral-300 text-xl">
                     / {pageData?.shopify?.revenue?.toFixed(2)}
@@ -239,7 +239,7 @@ function DashboardPage(pageData) {
                 <div className="w-fit h-fit p-2 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500 dark:from-cyan-600 dark:to-blue-600">
                   <PrinterIcon className="h-8 w-8 text-white dark:text-gray-950" />
                 </div>
-                <div className=" font-bold text-4xl dark:text-white">
+                <div className=" font-bold text-4xl dark:text-neutral-200">
                   ${pageData?.printify?.cost?.toFixed(2)}
                 </div>
                 <div className="text-neutral-400">Printify Cost</div>
@@ -282,7 +282,7 @@ function DashboardPage(pageData) {
         <Card>
           <div className="flex flex-col h-max-full overflow-hidden">
             <div>
-              <div className="w-fit h-fit p-2 bg-neutral-100 dark:bg-neutral-800 dark:text-white rounded-full">
+              <div className="w-fit h-fit p-2 bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-200 rounded-full">
                 <ShoppingCartIcon className="h-8 w-8 " />
               </div>
               <div className="text-neutral-800 dark:text-neutral-400 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4">

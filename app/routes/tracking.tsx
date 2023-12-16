@@ -177,10 +177,10 @@ export default function Index() {
   console.log("utmData", utmData);
 
   return (
-    <div className="max-h-screen h-screen bg-white flex justify-center items-center overflow-hidden dark:bg-gray-950 dark:text-white">
+    <div className="max-h-screen h-screen bg-white flex justify-center items-center overflow-hidden dark:bg-gray-950 dark:text-neutral-200">
       <Sidebar key={"pageType"} pageType={pageType} setPageType={setPageType} />
       <div></div>
-      <div className="max-h-screen h-screen md:w-[87.5%] bg-white dark:bg-gray-950 dark:text-white">
+      <div className="max-h-screen h-screen md:w-[87.5%] bg-white dark:bg-gray-950 dark:text-neutral-200">
         <div className="flex items-center justify-between font-bold text-2xl p-2 md:p-8 pb-0 ">
           <div>Tracking Page</div>
         </div>
@@ -193,7 +193,7 @@ export default function Index() {
                   <div className="w-fit h-fit p-2 bg-neutral-100 dark:bg-neutral-900 rounded-full">
                     <VideoCameraIcon className="h-8 w-8 " />
                   </div>
-                  <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4 dark:text-white">
+                  <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4 dark:text-neutral-200">
                     Live View{" "}
                     <span className="text-neutral-300 text-sm">
                       (last 180m)
@@ -216,12 +216,12 @@ export default function Index() {
                     <AtSymbolIcon className="h-8 w-8 " />
                   </div>
                   <div className="text-neutral-800 border-b text-2xl font-semibold border-neutral-200 mt-4 pb-4 flex justify-between items-center">
-                    <span className="dark:text-white">
+                    <span className="dark:text-neutral-200">
                       UTM High Stakes Leaderboards
                     </span>
                     <div className="text-base font-bold">
                       <button
-                        className={`p-2 mx-1 border border-neutral-400 dark:text-white rounded-lg ${
+                        className={`p-2 mx-1 border border-neutral-400 dark:text-neutral-200 rounded-lg ${
                           filter === "today" ? "bg-gray-500 text-white" : ""
                         }`}
                         onClick={handleTodayClick}
@@ -229,7 +229,7 @@ export default function Index() {
                         Today
                       </button>
                       <button
-                        className={`p-2 mx-1 border dark:text-white border-neutral-400 rounded-lg ${
+                        className={`p-2 mx-1 border dark:text-neutral-200 border-neutral-400 rounded-lg ${
                           filter === "yesterday" ? "bg-gray-500 text-white" : ""
                         }`}
                         onClick={handleYesterdayClick}
@@ -237,7 +237,7 @@ export default function Index() {
                         Yesterday
                       </button>
                       <button
-                        className={`p-2 mx-1 border dark:text-white border-neutral-400 rounded-lg ${
+                        className={`p-2 mx-1 border dark:text-neutral-200 border-neutral-400 rounded-lg ${
                           filter === "all" ? "bg-gray-500 text-white" : ""
                         }`}
                         onClick={handleAllTimeClick}

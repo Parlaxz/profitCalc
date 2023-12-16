@@ -138,7 +138,7 @@ export default function Index() {
   });
 
   return (
-    <div className="max-h-screen h-screen bg-white dark:bg-gray-950 flex justify-center items-center dark:text-white">
+    <div className="max-h-screen h-screen bg-white dark:bg-gray-950 flex justify-center items-center dark:text-neutral-200">
       <Sidebar key={"pageType"} pageType={pageType} setPageType={setPageType} />
       <div></div>
       <div className="max-h-screen h-screen w-[87.5%] bg-white dark:bg-gray-950">
@@ -150,12 +150,12 @@ export default function Index() {
           <Card>
             <>
               <DatePicker
-                className="dark:bg-gray-950 dark:border-neutral-700 dark:text-white dark:border"
+                className="dark:bg-gray-950 dark:border-neutral-700 dark:text-neutral-200 dark:border"
                 selected={endDate}
                 onChange={(date) => setEndDate(date)}
               />
               <DatePicker
-                className="dark:bg-gray-950 dark:border-neutral-700 dark:text-white dark:border"
+                className="dark:bg-gray-950 dark:border-neutral-700 dark:text-neutral-200 dark:border"
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
               />
