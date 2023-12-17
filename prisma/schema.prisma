@@ -59,6 +59,7 @@ model User {
   UTM         Json
   ip          String   @unique
   events      Event[]
+  eventsOld   Json[]
 }
 
 model Event {

@@ -51,7 +51,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   //     },
   //   },
   // });
-  const allUsers = await prisma.user.findMany({});
+  let allUsers = await prisma.user.findMany({ include: { events: true } });
+  allUsers = allUsers.map((user) => {
+    return { ...user, events: [...user.events, ...user.eventsOld] };
+  });
   const liveUsers = allUsers
     .filter((user) => {
       const timeUpdated = new Date(user.timeUpdated);
@@ -72,6 +75,7 @@ export default function Index() {
   let revalidator = useRevalidator();
 
   const loaderData = useLoaderData<typeof loader>();
+  console.log("loaderData", loaderData);
   const [pageType, setPageType] = useState("tracking");
   const purchasers = loaderData?.allUsers?.filter((user) =>
     user.events.some((event) => event.type === "purchase")
