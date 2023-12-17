@@ -25,7 +25,7 @@ export async function action({ request }: ActionFunctionArgs) {
       };
     }),
   };
-
+  //Try to add the order to shopifyOrders
   try {
     const prismaOrder = await prisma.shopifyOrder.upsert({
       where: {
@@ -40,67 +40,73 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    const getUser = await prisma.user.findFirst({
+    const userExist = await prisma.user.findFirst({
       where: {
         OR: [
           {
-            ip: order.ip,
+            ip: payload.ip,
           },
           {
             events: {
               some: {
-                cartId: order.cartId,
+                cartId: payload.cartId,
               },
             },
           },
         ],
       },
     });
-    let arr = [
-      {
-        type: "purchase",
-        timeCreated: new Date().toISOString(),
-        lines: order.lineItems,
-        value: order.revenue,
-        cartId: order.cartId,
-      },
-    ];
-    if (getUser) {
-      arr = [...getUser.events, ...arr];
+
+    if (userExist === null) {
+      var newUser = await prisma.user.create({
+        data: {
+          UTM: {
+            utmSource: "",
+            utmMedium: "",
+            utmCampaign: "",
+            valid: false,
+          },
+          timeCreated: new Date().toISOString(),
+          timeUpdated: new Date().toISOString(),
+          ip: payload.ip ?? "",
+          events: {
+            create: [
+              {
+                type: payload.event,
+                timeCreated: new Date().toISOString(),
+                timeUpdated: new Date().toISOString(),
+                lines: payload.items,
+                value: payload.value,
+                cartId: payload.cartId,
+              },
+            ],
+          },
+        },
+      });
+    } else {
+      var newUser = await prisma.user.update({
+        where: {
+          id: userExist.id,
+        },
+        data: {
+          timeUpdated: new Date().toISOString(),
+          events: {
+            create: [
+              {
+                type: payload.event,
+                timeCreated: new Date().toISOString(),
+                timeUpdated: new Date().toISOString(),
+                lines: payload.items,
+                value: payload.value,
+                cartId: payload.cartId,
+              },
+            ],
+          },
+        },
+      });
     }
 
-    const upsertUser = await prisma.user.upsert({
-      where: {
-        OR: [
-          {
-            ip: order.ip,
-          },
-          {
-            events: {
-              some: {
-                cartId: order.cartId,
-              },
-            },
-          },
-        ],
-      },
-      update: {
-        timeUpdated: new Date().toISOString(),
-        events: arr,
-      },
-      create: {
-        UTM: {
-          utmSource: "",
-          utmMedium: "",
-          utmCampaign: "",
-          valid: false,
-        },
-        timeCreated: new Date().toISOString(),
-        timeUpdated: new Date().toISOString(),
-        ip: order.ip,
-        events: arr,
-      },
-    });
+    console.log("newUser", newUser);
   } catch (err) {
     console.log("user creation / updating with order failed with err:", err);
   }

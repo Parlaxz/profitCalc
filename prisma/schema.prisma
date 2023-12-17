@@ -58,5 +58,17 @@ model User {
   timeUpdated DateTime
   UTM         Json
   ip          String   @unique
-  events      Json[]
+  events      Event[]
+}
+
+model Event {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  timeCreated DateTime
+  timeUpdated DateTime
+  type        String
+  lines       Json[]
+  value       Float
+  cartId      String
+  userId      String   @db.ObjectId
+  User        User     @relation(fields: [userId], references: [id])
 }
