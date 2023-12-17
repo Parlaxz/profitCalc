@@ -44,12 +44,12 @@ export async function action({ request }: ActionFunctionArgs) {
       where: {
         OR: [
           {
-            ip: payload.ip,
+            ip: order.ip,
           },
           {
             events: {
               some: {
-                cartId: payload.cartId,
+                cartId: order.cartId,
               },
             },
           },
@@ -68,7 +68,7 @@ export async function action({ request }: ActionFunctionArgs) {
           },
           timeCreated: new Date().toISOString(),
           timeUpdated: new Date().toISOString(),
-          ip: payload.ip ?? "",
+          ip: order.ip ?? "",
           events: {
             create: [
               {

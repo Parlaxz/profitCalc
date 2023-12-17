@@ -359,6 +359,11 @@ function LiveUser({ user }) {
           ) : (
             ""
           )}
+          {Number.isInteger(displayIndex) ? (
+            <div>{user?.events[displayIndex]?.cartId}</div>
+          ) : (
+            ""
+          )}
           {Number.isInteger(displayIndex) &&
             (user?.events[displayIndex]?.lines?.map((line) => {
               return event?.type !== "InitiateCheckout"
