@@ -72,7 +72,7 @@ export async function action({ request }: ActionFunctionArgs) {
           events: {
             create: [
               {
-                type: payload.event,
+                type: "purchase",
                 timeCreated: new Date().toISOString(),
                 timeUpdated: new Date().toISOString(),
                 lines: payload.items,
@@ -93,7 +93,7 @@ export async function action({ request }: ActionFunctionArgs) {
           events: {
             create: [
               {
-                type: payload.event,
+                type: "purchase",
                 timeCreated: new Date().toISOString(),
                 timeUpdated: new Date().toISOString(),
                 lines: payload.items,
