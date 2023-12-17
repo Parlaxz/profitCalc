@@ -66,7 +66,10 @@ export async function action({ request }: ActionFunctionArgs) {
               timeCreated: new Date().toISOString(),
               timeUpdated: new Date().toISOString(),
               lines: payload.items,
-              value: payload.value,
+              value:
+                typeof payload.value === "string"
+                  ? parseFloat(payload.value)
+                  : payload.value,
               cartId: payload.cartId,
             },
           ],
