@@ -29,9 +29,6 @@ export async function action({ request }: ActionFunctionArgs) {
       where: {
         OR: [
           {
-            ip: order.ip,
-          },
-          {
             events: {
               some: {
                 cartId: order.cartId,
@@ -43,31 +40,31 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     if (userExist === null) {
-      var newUser = await prisma.user.create({
-        data: {
-          UTM: {
-            utmSource: "",
-            utmMedium: "",
-            utmCampaign: "",
-            valid: false,
-          },
-          timeCreated: new Date().toISOString(),
-          timeUpdated: new Date().toISOString(),
-          ip: order.ip ?? "",
-          events: {
-            create: [
-              {
-                type: "InitiateCheckout",
-                timeCreated: new Date().toISOString(),
-                timeUpdated: new Date().toISOString(),
-                lines: order.lineItems,
-                value: order.revenue,
-                cartId: order.cartId,
-              },
-            ],
-          },
-        },
-      });
+      // var newUser = await prisma.user.create({
+      //   data: {
+      //     UTM: {
+      //       utmSource: "",
+      //       utmMedium: "",
+      //       utmCampaign: "",
+      //       valid: false,
+      //     },
+      //     timeCreated: new Date().toISOString(),
+      //     timeUpdated: new Date().toISOString(),
+      //     ip: order.ip ?? "",
+      //     events: {
+      //       create: [
+      //         {
+      //           type: "InitiateCheckout",
+      //           timeCreated: new Date().toISOString(),
+      //           timeUpdated: new Date().toISOString(),
+      //           lines: order.lineItems,
+      //           value: order.revenue,
+      //           cartId: order.cartId,
+      //         },
+      //       ],
+      //     },
+      //   },
+      // });
     } else {
       var newUser = await prisma.user.update({
         where: {
