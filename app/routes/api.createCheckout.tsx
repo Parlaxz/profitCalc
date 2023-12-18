@@ -57,7 +57,7 @@ export async function action({ request }: ActionFunctionArgs) {
           events: {
             create: [
               {
-                type: "initiateCheckout",
+                type: "InitiateCheckout",
                 timeCreated: new Date().toISOString(),
                 timeUpdated: new Date().toISOString(),
                 lines: order.lineItems,
@@ -78,7 +78,7 @@ export async function action({ request }: ActionFunctionArgs) {
           events: {
             create: [
               {
-                type: "initiatedCheckout",
+                type: "InitiateCheckout",
                 timeCreated: new Date().toISOString(),
                 timeUpdated: new Date().toISOString(),
                 lines: order.lineItems,
