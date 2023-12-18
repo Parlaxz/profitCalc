@@ -78,7 +78,7 @@ export async function action({ request }: ActionFunctionArgs) {
           events: {
             create: [
               {
-                type: "initiateCheckout",
+                type: "initiatedCheckout",
                 timeCreated: new Date().toISOString(),
                 timeUpdated: new Date().toISOString(),
                 lines: order.lineItems,
