@@ -477,6 +477,8 @@ const UTMTable = ({ data, dateRange }) => {
                 : 0 - budget * daysSinceTargetDate;
             let profitAll = profit + (nonPaidValue * 0.435) / numAds;
             let profitLinktree = profit + (linkTreeValue * 0.435) / numAds;
+            if(profitLinktree < 0) profitLinktree = 0;
+            if(profitAll < 0) profitAll = 0;
             // if (!isAd) {
             //   profit = 0;
             // }
